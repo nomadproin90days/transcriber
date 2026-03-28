@@ -244,6 +244,31 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/api/thumbnail/<job_id>")
+def api_thumbnail(job_id):
+    """Proxy thumbnail image to avoid hotlink protection."""
+    import urllib.request
+    job = jobs.get(job_id)
+    if not job or not job.get("video_info") or not job["video_info"].get("thumbnail"):
+        return "", 404
+
+    thumb_url = job["video_info"]["thumbnail"]
+    try:
+        req = urllib.request.Request(thumb_url, headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+            "Referer": job.get("url", ""),
+        })
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = resp.read()
+            content_type = resp.headers.get("Content-Type", "image/jpeg")
+        from flask import Response
+        return Response(data, content_type=content_type, headers={
+            "Cache-Control": "public, max-age=3600",
+        })
+    except Exception:
+        return "", 404
+
+
 @app.route("/api/download-video", methods=["POST"])
 def api_download_video():
     """Download video file and serve it to the user."""

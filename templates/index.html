@@ -1102,10 +1102,10 @@
 
             const info = job.video_info || {};
 
-            // Thumbnail
+            // Thumbnail - proxy through our backend to avoid hotlink protection
             const thumbEl = document.getElementById('result-thumbnail');
             if (info.thumbnail) {
-                thumbEl.src = info.thumbnail;
+                thumbEl.src = `/api/thumbnail/${job.id}`;
                 thumbEl.style.display = 'block';
                 thumbEl.onerror = () => { thumbEl.style.display = 'none'; };
             } else {
@@ -1150,17 +1150,23 @@
             showEl('result-single');
         }
 
-        // Save cover image (thumbnail)
-        function saveCoverImage() {
-            if (!currentResult?.video_info?.thumbnail) return;
-            const url = currentResult.video_info.thumbnail;
+        // Save cover image (thumbnail) via proxy
+        async function saveCoverImage() {
+            if (!currentResult?.id) return;
             const title = currentResult.video_info?.title || 'cover';
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${title.replace(/[^a-z0-9]/gi, '_')}_cover.jpg`;
-            a.target = '_blank';
-            a.rel = 'noopener';
-            a.click();
+            try {
+                const res = await fetch(`/api/thumbnail/${currentResult.id}`);
+                if (!res.ok) throw new Error('Failed to fetch image');
+                const blob = await res.blob();
+                const ext = blob.type.includes('png') ? '.png' : '.jpg';
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `${title.replace(/[^a-z0-9]/gi, '_')}_cover${ext}`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+            } catch (err) {
+                alert('Failed to save cover image');
+            }
         }
 
         // Download video
