@@ -95,16 +95,42 @@ def download_audio(url: str, output_path: str) -> dict:
         "no_warnings": True,
         "socket_timeout": 30,
         "retries": 3,
+        "extractor_args": {
+            "instagram": {"skip": ["dash"]},
+        },
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
 
+    # Get best thumbnail
+    thumbnail = info.get("thumbnail", "")
+    thumbnails = info.get("thumbnails", [])
+    if thumbnails:
+        # Pick the largest thumbnail available
+        best = sorted(thumbnails, key=lambda t: t.get("width", 0) * t.get("height", 0), reverse=True)
+        thumbnail = best[0].get("url", thumbnail)
+
+    # Get video download URL for "Download video" button
+    video_url = ""
+    formats = info.get("formats", [])
+    for f in reversed(formats):
+        if f.get("vcodec", "none") != "none" and f.get("acodec", "none") != "none":
+            video_url = f.get("url", "")
+            break
+    if not video_url:
+        video_url = info.get("url", "")
+
     return {
         "title": info.get("title", "Unknown"),
         "duration": info.get("duration", 0),
         "uploader": info.get("uploader", "Unknown"),
-        "thumbnail": info.get("thumbnail", ""),
+        "thumbnail": thumbnail,
+        "video_url": video_url,
+        "original_url": url,
     }
 
 
@@ -216,6 +242,66 @@ def process_upload_job(job_id: str, file_path: str, filename: str):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/api/download-video", methods=["POST"])
+def api_download_video():
+    """Download video file and serve it to the user."""
+    data = request.get_json()
+    if not data or not data.get("url"):
+        return jsonify({"error": "URL is required"}), 400
+
+    url = data["url"].strip()
+    if not validate_url(url):
+        return jsonify({"error": "Invalid URL"}), 400
+
+    import yt_dlp
+
+    job_id = str(uuid.uuid4())[:8]
+    output_path = str(DOWNLOAD_DIR / f"{job_id}.%(ext)s")
+
+    ydl_opts = {
+        "format": "best[ext=mp4]/best",
+        "outtmpl": output_path,
+        "quiet": True,
+        "no_warnings": True,
+        "socket_timeout": 30,
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        },
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+
+        # Find the downloaded file
+        video_file = None
+        for f in DOWNLOAD_DIR.glob(f"{job_id}.*"):
+            video_file = f
+            break
+
+        if not video_file:
+            return jsonify({"error": "Download failed"}), 500
+
+        from flask import send_file
+        title = info.get("title", "video")
+        safe_title = re.sub(r'[^a-zA-Z0-9_-]', '_', title)[:80]
+
+        return send_file(
+            str(video_file),
+            as_attachment=True,
+            download_name=f"{safe_title}{video_file.suffix}",
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        # Clean up after sending
+        for f in DOWNLOAD_DIR.glob(f"{job_id}.*"):
+            try:
+                f.unlink()
+            except OSError:
+                pass
 
 
 @app.route("/api/transcribe", methods=["POST"])

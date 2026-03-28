@@ -141,7 +141,7 @@
 
         /* Main container */
         .container {
-            max-width: 800px;
+            max-width: 960px;
             margin: 0 auto;
             padding: 0 24px 60px;
         }
@@ -378,127 +378,158 @@
             text-transform: capitalize;
         }
 
-        /* Result card */
+        /* Result card - side by side layout */
         .result-card {
             display: none;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
             margin-bottom: 16px;
         }
 
         .result-card.visible { display: block; }
 
-        .result-header {
-            display: flex;
-            align-items: flex-start;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            gap: 16px;
+        .result-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* Left: video preview */
+        .result-preview {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--border);
         }
 
         .result-thumbnail {
-            width: 120px;
-            height: 80px;
-            border-radius: 8px;
+            width: 100%;
+            aspect-ratio: 9/16;
             object-fit: cover;
+            display: block;
             background: var(--surface-2);
-            flex-shrink: 0;
+        }
+
+        .result-thumbnail.landscape {
+            aspect-ratio: 16/9;
         }
 
         .result-thumbnail.hidden { display: none; }
 
-        .result-info {
-            flex: 1;
-            min-width: 0;
+        .thumbnail-placeholder {
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: var(--surface-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .thumbnail-placeholder svg { width: 48px; height: 48px; }
+
+        .preview-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        }
+
+        .overlay-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .overlay-btn-cover {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .overlay-btn-cover:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .overlay-btn-video {
+            background: var(--accent);
+            color: white;
+        }
+
+        .overlay-btn-video:hover {
+            background: var(--accent-hover);
+        }
+
+        .preview-info {
+            padding: 14px;
         }
 
         .result-title {
             font-weight: 600;
-            font-size: 15px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            font-size: 14px;
+            line-height: 1.4;
             margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .result-uploader {
             font-size: 13px;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .result-meta {
             display: flex;
-            gap: 12px;
-            font-size: 12px;
-            color: var(--text-muted);
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .result-meta-tag {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 10px;
+            border-radius: 6px;
             background: var(--surface-2);
-        }
-
-        .result-actions {
-            display: flex;
-            gap: 8px;
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg);
-        }
-
-        .btn-sm {
-            padding: 8px 14px;
-            font-size: 13px;
-            border-radius: 8px;
-        }
-
-        .result-body {
-            padding: 20px;
-        }
-
-        .transcript-text {
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--text);
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        /* Segments view */
-        .segments-view { display: none; }
-        .segments-view.active { display: block; }
-        .full-text-view.active { display: block; }
-
-        .segment {
-            display: flex;
-            gap: 12px;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .segment:last-child { border-bottom: none; }
-
-        .segment-time {
-            font-family: 'SF Mono', 'Fira Code', monospace;
             font-size: 12px;
-            color: var(--accent);
-            min-width: 60px;
-            padding-top: 2px;
+            color: var(--text-muted);
         }
 
-        .segment-text {
-            font-size: 15px;
-            line-height: 1.6;
+        /* Right: transcript panel */
+        .result-transcript {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            max-height: 600px;
         }
 
-        /* View toggle */
+        .transcript-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
         .view-toggle {
             display: flex;
             gap: 2px;
@@ -522,6 +553,90 @@
         .view-btn.active {
             background: var(--surface-2);
             color: var(--text);
+        }
+
+        .toolbar-spacer { flex: 1; }
+
+        .toolbar-btn {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            color: var(--text);
+            background: var(--surface-2);
+        }
+
+        .result-body {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .transcript-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Segments view */
+        .segments-view { display: none; }
+        .segments-view.active { display: block; }
+        .full-text-view { display: none; }
+        .full-text-view.active { display: block; }
+
+        .segment {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .segment:last-child { border-bottom: none; }
+
+        .segment-time {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            min-width: 50px;
+            padding-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .segment-text {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        /* Responsive: stack on mobile */
+        @media (max-width: 768px) {
+            .result-layout {
+                grid-template-columns: 1fr;
+            }
+            .result-thumbnail {
+                aspect-ratio: 16/9;
+            }
+            .result-transcript {
+                max-height: 500px;
+            }
         }
 
         /* Batch results */
@@ -667,7 +782,6 @@
             .hero { padding: 40px 16px 24px; }
             .url-input-wrap { flex-direction: column; }
             .btn { width: 100%; justify-content: center; }
-            .result-header { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -732,44 +846,68 @@
             </div>
 
             <div class="result-card" id="result-single">
-                <div class="result-header">
-                    <img class="result-thumbnail hidden" id="result-thumbnail" alt="Video thumbnail">
-                    <div class="result-info">
-                        <div class="result-title" id="result-title"></div>
-                        <div class="result-uploader" id="result-uploader"></div>
-                        <div class="result-meta">
-                            <span class="result-meta-tag" id="result-platform-tag"></span>
-                            <span class="result-meta-tag" id="result-duration"></span>
-                            <span class="result-meta-tag" id="result-language"></span>
+                <div class="result-layout">
+                    <!-- Left: Video preview -->
+                    <div class="result-preview">
+                        <img class="result-thumbnail" id="result-thumbnail" alt="Video thumbnail">
+                        <div class="preview-overlay">
+                            <button class="overlay-btn overlay-btn-cover" onclick="saveCoverImage()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Save cover image
+                            </button>
+                            <button class="overlay-btn overlay-btn-video" onclick="downloadVideo()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download video
+                            </button>
+                        </div>
+                        <div class="preview-info">
+                            <div class="result-title" id="result-title"></div>
+                            <div class="result-uploader" id="result-uploader"></div>
+                            <div class="result-meta">
+                                <span class="result-meta-tag" id="result-platform-tag"></span>
+                                <span class="result-meta-tag" id="result-duration"></span>
+                                <span class="result-meta-tag" id="result-language"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="result-actions">
-                    <div class="view-toggle">
-                        <button class="view-btn" onclick="setView('full')">Full Text</button>
-                        <button class="view-btn active" onclick="setView('segments')">Timestamps</button>
+
+                    <!-- Right: Transcript -->
+                    <div class="result-transcript">
+                        <div class="transcript-toolbar">
+                            <div class="view-toggle">
+                                <button class="view-btn" onclick="setView('full')">Full Text</button>
+                                <button class="view-btn active" onclick="setView('segments')">Timestamps</button>
+                            </div>
+                            <div class="toolbar-spacer"></div>
+                            <button class="toolbar-btn" onclick="copyTranscript()" title="Copy">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                </svg>
+                            </button>
+                            <button class="toolbar-btn" onclick="downloadTranscript()" title="Download transcript">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="result-body">
+                            <div class="full-text-view" id="full-text-view">
+                                <div class="transcript-text" id="transcript-full"></div>
+                            </div>
+                            <div class="segments-view active" id="segments-view"></div>
+                        </div>
                     </div>
-                    <button class="btn btn-secondary btn-sm" onclick="copyTranscript()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                        Copy
-                    </button>
-                    <button class="btn btn-secondary btn-sm" onclick="downloadTranscript()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7 10 12 15 17 10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                        Download
-                    </button>
-                </div>
-                <div class="result-body">
-                    <div class="full-text-view" id="full-text-view">
-                        <div class="transcript-text" id="transcript-full"></div>
-                    </div>
-                    <div class="segments-view active" id="segments-view"></div>
                 </div>
             </div>
         </div>
@@ -968,10 +1106,10 @@
             const thumbEl = document.getElementById('result-thumbnail');
             if (info.thumbnail) {
                 thumbEl.src = info.thumbnail;
-                thumbEl.classList.remove('hidden');
-                thumbEl.onerror = () => thumbEl.classList.add('hidden');
+                thumbEl.style.display = 'block';
+                thumbEl.onerror = () => { thumbEl.style.display = 'none'; };
             } else {
-                thumbEl.classList.add('hidden');
+                thumbEl.style.display = 'none';
             }
 
             // Info
@@ -1010,6 +1148,56 @@
             });
 
             showEl('result-single');
+        }
+
+        // Save cover image (thumbnail)
+        function saveCoverImage() {
+            if (!currentResult?.video_info?.thumbnail) return;
+            const url = currentResult.video_info.thumbnail;
+            const title = currentResult.video_info?.title || 'cover';
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${title.replace(/[^a-z0-9]/gi, '_')}_cover.jpg`;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            a.click();
+        }
+
+        // Download video
+        async function downloadVideo() {
+            if (!currentResult?.video_info?.original_url) return;
+            const btn = event.target.closest('.overlay-btn');
+            const origText = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> Downloading...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/download-video', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url: currentResult.video_info.original_url})
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'Download failed');
+                }
+                const blob = await res.blob();
+                const disposition = res.headers.get('Content-Disposition') || '';
+                let filename = 'video.mp4';
+                const match = disposition.match(/filename="?(.+?)"?$/);
+                if (match) filename = match[1];
+
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(a.href);
+            } catch (err) {
+                alert('Video download failed: ' + err.message);
+            } finally {
+                btn.innerHTML = origText;
+                btn.disabled = false;
+            }
         }
 
         function showUploadResult(job) {
