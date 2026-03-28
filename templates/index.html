@@ -392,20 +392,41 @@
 
         .result-header {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            align-items: flex-start;
             padding: 16px 20px;
             border-bottom: 1px solid var(--border);
-            gap: 12px;
+            gap: 16px;
+        }
+
+        .result-thumbnail {
+            width: 120px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--surface-2);
+            flex-shrink: 0;
+        }
+
+        .result-thumbnail.hidden { display: none; }
+
+        .result-info {
+            flex: 1;
+            min-width: 0;
         }
 
         .result-title {
             font-weight: 600;
             font-size: 15px;
-            flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            margin-bottom: 6px;
+        }
+
+        .result-uploader {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
         }
 
         .result-meta {
@@ -413,6 +434,15 @@
             gap: 12px;
             font-size: 12px;
             color: var(--text-muted);
+        }
+
+        .result-meta-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--surface-2);
         }
 
         .result-actions {
@@ -703,16 +733,21 @@
 
             <div class="result-card" id="result-single">
                 <div class="result-header">
-                    <span class="result-title" id="result-title"></span>
-                    <div class="result-meta">
-                        <span id="result-duration"></span>
-                        <span id="result-language"></span>
+                    <img class="result-thumbnail hidden" id="result-thumbnail" alt="Video thumbnail">
+                    <div class="result-info">
+                        <div class="result-title" id="result-title"></div>
+                        <div class="result-uploader" id="result-uploader"></div>
+                        <div class="result-meta">
+                            <span class="result-meta-tag" id="result-platform-tag"></span>
+                            <span class="result-meta-tag" id="result-duration"></span>
+                            <span class="result-meta-tag" id="result-language"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="result-actions">
                     <div class="view-toggle">
-                        <button class="view-btn active" onclick="setView('full')">Full Text</button>
-                        <button class="view-btn" onclick="setView('segments')">Timestamps</button>
+                        <button class="view-btn" onclick="setView('full')">Full Text</button>
+                        <button class="view-btn active" onclick="setView('segments')">Timestamps</button>
                     </div>
                     <button class="btn btn-secondary btn-sm" onclick="copyTranscript()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -731,10 +766,10 @@
                     </button>
                 </div>
                 <div class="result-body">
-                    <div class="full-text-view active" id="full-text-view">
+                    <div class="full-text-view" id="full-text-view">
                         <div class="transcript-text" id="transcript-full"></div>
                     </div>
-                    <div class="segments-view" id="segments-view"></div>
+                    <div class="segments-view active" id="segments-view"></div>
                 </div>
             </div>
         </div>
@@ -928,14 +963,37 @@
             enableBtn('transcribe-btn');
 
             const info = job.video_info || {};
+
+            // Thumbnail
+            const thumbEl = document.getElementById('result-thumbnail');
+            if (info.thumbnail) {
+                thumbEl.src = info.thumbnail;
+                thumbEl.classList.remove('hidden');
+                thumbEl.onerror = () => thumbEl.classList.add('hidden');
+            } else {
+                thumbEl.classList.add('hidden');
+            }
+
+            // Info
             document.getElementById('result-title').textContent = info.title || 'Untitled';
-            document.getElementById('result-duration').textContent = info.duration ? formatDuration(info.duration) : '';
-            document.getElementById('result-language').textContent = job.result.language ? `Language: ${job.result.language}` : '';
+            document.getElementById('result-uploader').textContent = info.uploader && info.uploader !== 'Unknown' ? info.uploader : '';
+
+            // Meta tags
+            const platformTag = document.getElementById('result-platform-tag');
+            platformTag.textContent = (job.platform || 'video').charAt(0).toUpperCase() + (job.platform || 'video').slice(1);
+
+            const durationEl = document.getElementById('result-duration');
+            durationEl.textContent = info.duration ? formatDuration(info.duration) : '';
+            durationEl.style.display = info.duration ? '' : 'none';
+
+            const langEl = document.getElementById('result-language');
+            langEl.textContent = job.result.language ? job.result.language.toUpperCase() : '';
+            langEl.style.display = job.result.language ? '' : 'none';
 
             // Full text
             document.getElementById('transcript-full').textContent = job.result.full_text;
 
-            // Segments
+            // Segments with timestamps
             const segEl = document.getElementById('segments-view');
             segEl.innerHTML = job.result.segments.map(s => `
                 <div class="segment">
@@ -943,6 +1001,13 @@
                     <span class="segment-text">${escapeHtml(s.text)}</span>
                 </div>
             `).join('');
+
+            // Default to timestamps view
+            document.getElementById('full-text-view').classList.remove('active');
+            document.getElementById('segments-view').classList.add('active');
+            document.querySelectorAll('.view-btn').forEach(b => {
+                b.classList.toggle('active', b.textContent.trim() === 'Timestamps');
+            });
 
             showEl('result-single');
         }
@@ -1080,8 +1145,19 @@
 
         function downloadTranscript() {
             if (!currentResult?.result) return;
-            const text = currentResult.result.full_text;
             const title = currentResult.video_info?.title || 'transcript';
+            const segments = currentResult.result.segments || [];
+
+            // Build timestamped text
+            let text = `${title}\n`;
+            text += `${'='.repeat(title.length)}\n\n`;
+            if (segments.length > 0) {
+                text += segments.map(s => `[${formatTime(s.start)}] ${s.text}`).join('\n');
+                text += `\n\n---\nFull text:\n${currentResult.result.full_text}`;
+            } else {
+                text += currentResult.result.full_text;
+            }
+
             const blob = new Blob([text], {type: 'text/plain'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -1107,8 +1183,10 @@
         }
 
         function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
             const s = Math.floor(seconds % 60);
+            if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
             return `${m}:${s.toString().padStart(2, '0')}`;
         }
 

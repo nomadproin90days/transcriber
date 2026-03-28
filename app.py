@@ -3,13 +3,26 @@ import uuid
 import json
 import time
 import re
+import secrets
 import threading
 from pathlib import Path
 
 from flask import Flask, render_template, request, jsonify
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500MB upload limit
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
+
+
+@app.after_request
+def security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
 
 DOWNLOAD_DIR = Path(__file__).parent / "downloads"
 DOWNLOAD_DIR.mkdir(exist_ok=True)
@@ -53,8 +66,19 @@ def detect_platform(url: str) -> str:
     return "other"
 
 
+def validate_url(url: str) -> bool:
+    """Reject non-HTTP URLs and local/private addresses."""
+    if not re.match(r'^https?://', url, re.IGNORECASE):
+        return False
+    # Block local/private IPs
+    blocked = ['localhost', '127.0.0.1', '0.0.0.0', '10.', '172.16.', '192.168.', '[::1]', 'file://']
+    return not any(b in url.lower() for b in blocked)
+
+
 def download_audio(url: str, output_path: str) -> dict:
     """Download audio from a URL using yt-dlp. Returns info dict."""
+    if not validate_url(url):
+        raise ValueError("Invalid URL. Only public HTTP/HTTPS URLs are allowed.")
     import yt_dlp
 
     ydl_opts = {
@@ -201,6 +225,9 @@ def api_transcribe():
         return jsonify({"error": "URL is required"}), 400
 
     url = data["url"].strip()
+    if not validate_url(url):
+        return jsonify({"error": "Invalid URL. Only public HTTP/HTTPS URLs are allowed."}), 400
+
     platform = detect_platform(url)
 
     job_id = str(uuid.uuid4())[:8]
@@ -261,8 +288,13 @@ def api_transcribe_upload():
     if not file.filename:
         return jsonify({"error": "No file selected"}), 400
 
+    safe_name = secure_filename(file.filename)
+    allowed_ext = {'.mp4', '.mp3', '.wav', '.m4a', '.webm', '.ogg', '.mov', '.avi', '.mkv', '.flac'}
+    ext = Path(safe_name).suffix.lower() or ".mp3"
+    if ext not in allowed_ext:
+        return jsonify({"error": f"File type {ext} not supported"}), 400
+
     job_id = str(uuid.uuid4())[:8]
-    ext = Path(file.filename).suffix or ".mp3"
     file_path = str(DOWNLOAD_DIR / f"{job_id}{ext}")
     file.save(file_path)
 
