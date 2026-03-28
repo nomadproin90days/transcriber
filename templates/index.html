@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transcriber - Free Social Media Transcript Generator</title>
+    <title>Free Social Media Transcript Generator | Luxetide Studio</title>
+    <meta name="description" content="Free unlimited transcript generator for Instagram Reels, TikTok, YouTube Shorts, and more. No login, no limits, no BS. By Luxetide Studio.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0a;
-            --surface: #141414;
-            --surface-2: #1e1e1e;
-            --border: #2a2a2a;
-            --text: #e5e5e5;
-            --text-muted: #888;
-            --accent: #a855f7;
-            --accent-hover: #9333ea;
-            --accent-glow: rgba(168, 85, 247, 0.15);
-            --green: #22c55e;
+            --bg: #ffffff;
+            --bg-alt: #fafafa;
+            --surface: #ffffff;
+            --border: #eeeeee;
+            --border-hover: #111111;
+            --text: #111111;
+            --text-muted: #666666;
+            --text-light: #999999;
+            --accent: #111111;
+            --accent-hover: #333333;
+            --green: #34d399;
             --red: #ef4444;
             --orange: #f97316;
             --blue: #3b82f6;
@@ -25,90 +30,110 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            line-height: 1.6;
+            line-height: 1.7;
+            font-size: 15px;
         }
+
+        ::selection { background: var(--text); color: var(--bg); }
 
         /* Nav */
         nav {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 32px;
+            padding: 0 clamp(20px, 4vw, 56px);
+            height: 64px;
             border-bottom: 1px solid var(--border);
-            background: var(--bg);
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(12px);
         }
 
         .logo {
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .logo svg { width: 28px; height: 28px; }
-
-        .nav-links {
-            display: flex;
-            gap: 8px;
-        }
-
         .nav-link {
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 9px 20px;
+            border-radius: 100px;
             color: var(--text-muted);
             text-decoration: none;
             font-size: 14px;
-            transition: all 0.2s;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
             border: none;
             background: none;
             font-family: inherit;
         }
 
-        .nav-link:hover, .nav-link.active {
-            color: var(--text);
-            background: var(--surface-2);
-        }
+        .nav-link:hover { color: var(--text); }
 
         .nav-link.active {
-            color: var(--accent);
+            background: var(--accent);
+            color: var(--bg);
         }
+
+        .nav-link-site {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 9px 20px;
+            border-radius: 100px;
+            transition: all 0.3s;
+        }
+
+        .nav-link-site:hover { color: var(--text); background: var(--bg-alt); }
 
         /* Hero */
         .hero {
             text-align: center;
-            padding: 60px 24px 32px;
+            padding: clamp(60px, 10vh, 120px) clamp(20px, 4vw, 56px) clamp(32px, 5vh, 48px);
+        }
+
+        .hero-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 20px;
         }
 
         .hero h1 {
-            font-size: clamp(28px, 5vw, 48px);
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        .hero h1 .highlight {
-            background: linear-gradient(135deg, var(--accent), #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 0.9;
+            margin-bottom: 16px;
         }
 
         .hero p {
             color: var(--text-muted);
-            font-size: 18px;
-            max-width: 600px;
+            font-size: 17px;
+            max-width: 520px;
             margin: 0 auto;
+            line-height: 1.7;
         }
 
         /* Platform pills */
@@ -116,7 +141,7 @@
             display: flex;
             gap: 8px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 24px;
             flex-wrap: wrap;
         }
 
@@ -125,25 +150,26 @@
             align-items: center;
             gap: 6px;
             padding: 6px 14px;
-            border-radius: 20px;
-            background: var(--surface);
+            border-radius: 100px;
+            background: var(--bg-alt);
             border: 1px solid var(--border);
             font-size: 13px;
             color: var(--text-muted);
+            font-weight: 500;
         }
 
         .platform-pill .dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--green);
         }
 
-        /* Main container */
+        /* Container */
         .container {
             max-width: 960px;
             margin: 0 auto;
-            padding: 0 24px 60px;
+            padding: 0 clamp(20px, 4vw, 56px) 80px;
         }
 
         /* Tabs */
@@ -152,31 +178,30 @@
             gap: 4px;
             justify-content: center;
             margin: 32px 0 24px;
-            background: var(--surface);
-            border-radius: 10px;
+            background: var(--bg-alt);
+            border-radius: 100px;
             padding: 4px;
             border: 1px solid var(--border);
         }
 
         .tab {
             padding: 10px 24px;
-            border-radius: 8px;
+            border-radius: 100px;
             border: none;
             background: none;
             color: var(--text-muted);
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             font-family: inherit;
-            position: relative;
         }
 
         .tab:hover { color: var(--text); }
 
         .tab.active {
             background: var(--accent);
-            color: white;
+            color: var(--bg);
         }
 
         .tab .badge {
@@ -184,7 +209,7 @@
             background: var(--green);
             color: white;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: 100px;
             margin-left: 6px;
             font-weight: 700;
             text-transform: uppercase;
@@ -196,7 +221,7 @@
 
         /* Input area */
         .input-group {
-            background: var(--surface);
+            background: var(--bg);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 20px;
@@ -212,31 +237,30 @@
         .url-input {
             flex: 1;
             padding: 14px 16px;
-            border-radius: 10px;
+            border-radius: 100px;
             border: 1px solid var(--border);
-            background: var(--bg);
+            background: var(--bg-alt);
             color: var(--text);
             font-size: 15px;
             font-family: inherit;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.3s;
         }
 
         .url-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
+            border-color: var(--text);
         }
 
-        .url-input::placeholder { color: #555; }
+        .url-input::placeholder { color: var(--text-light); }
 
         .btn {
             padding: 14px 28px;
-            border-radius: 10px;
+            border-radius: 100px;
             border: none;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             font-family: inherit;
             display: inline-flex;
             align-items: center;
@@ -246,53 +270,48 @@
 
         .btn-primary {
             background: var(--accent);
-            color: white;
+            color: var(--bg);
         }
 
         .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
 
         .btn-primary:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .btn-secondary {
-            background: var(--surface-2);
+            background: var(--bg-alt);
             color: var(--text);
             border: 1px solid var(--border);
         }
 
-        .btn-secondary:hover {
-            background: var(--border);
-        }
+        .btn-secondary:hover { border-color: var(--text); }
 
         /* Batch textarea */
         .batch-textarea {
             width: 100%;
             min-height: 150px;
             padding: 14px 16px;
-            border-radius: 10px;
+            border-radius: var(--radius);
             border: 1px solid var(--border);
-            background: var(--bg);
+            background: var(--bg-alt);
             color: var(--text);
             font-size: 14px;
             font-family: 'SF Mono', 'Fira Code', monospace;
             outline: none;
             resize: vertical;
             line-height: 1.8;
-            transition: border-color 0.2s;
+            transition: border-color 0.3s;
         }
 
-        .batch-textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        .batch-textarea::placeholder { color: #555; }
+        .batch-textarea:focus { border-color: var(--text); }
+        .batch-textarea::placeholder { color: var(--text-light); }
 
         .batch-hint {
             color: var(--text-muted);
@@ -308,43 +327,26 @@
             padding: 48px 24px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
-            background: var(--bg);
+            transition: all 0.3s;
+            background: var(--bg-alt);
         }
 
         .upload-zone:hover, .upload-zone.dragover {
-            border-color: var(--accent);
-            background: var(--accent-glow);
+            border-color: var(--text);
         }
 
-        .upload-zone svg {
-            width: 48px;
-            height: 48px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-        }
-
-        .upload-zone p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .upload-zone .upload-main {
-            color: var(--text);
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
+        .upload-zone svg { width: 48px; height: 48px; color: var(--text-light); margin-bottom: 12px; }
+        .upload-zone p { color: var(--text-muted); font-size: 14px; }
+        .upload-zone .upload-main { color: var(--text); font-size: 16px; font-weight: 600; margin-bottom: 4px; }
         #file-input { display: none; }
 
-        /* Status / progress */
+        /* Status */
         .status-bar {
             display: none;
             align-items: center;
             gap: 12px;
             padding: 16px 20px;
-            background: var(--surface);
+            background: var(--bg-alt);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             margin-bottom: 16px;
@@ -353,37 +355,32 @@
         .status-bar.visible { display: flex; }
 
         .spinner {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid var(--border);
-            border-top-color: var(--accent);
+            border-top-color: var(--text);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .status-text {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
+        .status-text { font-size: 14px; color: var(--text-muted); }
 
         .status-platform {
             margin-left: auto;
             font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: var(--surface-2);
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
             color: var(--text-muted);
             text-transform: capitalize;
+            font-weight: 500;
         }
 
-        /* Result card - side by side layout */
-        .result-card {
-            display: none;
-            margin-bottom: 16px;
-        }
-
+        /* Result card */
+        .result-card { display: none; margin-bottom: 16px; }
         .result-card.visible { display: block; }
 
         .result-layout {
@@ -398,8 +395,8 @@
             position: relative;
             border-radius: var(--radius);
             overflow: hidden;
-            background: var(--surface);
             border: 1px solid var(--border);
+            background: var(--bg-alt);
         }
 
         .result-thumbnail {
@@ -407,26 +404,8 @@
             aspect-ratio: 9/16;
             object-fit: cover;
             display: block;
-            background: var(--surface-2);
+            background: var(--bg-alt);
         }
-
-        .result-thumbnail.landscape {
-            aspect-ratio: 16/9;
-        }
-
-        .result-thumbnail.hidden { display: none; }
-
-        .thumbnail-placeholder {
-            width: 100%;
-            aspect-ratio: 9/16;
-            background: var(--surface-2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-        }
-
-        .thumbnail-placeholder svg { width: 48px; height: 48px; }
 
         .preview-overlay {
             position: absolute;
@@ -436,12 +415,12 @@
             padding: 12px;
             display: flex;
             gap: 8px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
         }
 
         .overlay-btn {
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 100px;
             border: none;
             font-size: 13px;
             font-weight: 600;
@@ -450,75 +429,65 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s;
-            backdrop-filter: blur(8px);
+            transition: all 0.3s;
         }
 
         .overlay-btn-cover {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.2);
             color: white;
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .overlay-btn-cover:hover {
-            background: rgba(255,255,255,0.25);
-        }
+        .overlay-btn-cover:hover { background: rgba(255,255,255,0.3); }
 
         .overlay-btn-video {
-            background: var(--accent);
-            color: white;
+            background: var(--bg);
+            color: var(--text);
         }
 
-        .overlay-btn-video:hover {
-            background: var(--accent-hover);
-        }
+        .overlay-btn-video:hover { transform: translateY(-1px); }
 
-        .preview-info {
-            padding: 14px;
-        }
+        .preview-info { padding: 16px; }
 
         .result-title {
+            font-family: 'Space Grotesk', sans-serif;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.4;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            letter-spacing: -0.02em;
         }
 
-        .result-uploader {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
+        .result-uploader { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
 
-        .result-meta {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .result-meta { display: flex; gap: 6px; flex-wrap: wrap; }
 
         .result-meta-tag {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
             padding: 3px 10px;
-            border-radius: 6px;
-            background: var(--surface-2);
-            font-size: 12px;
+            border-radius: 100px;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            font-size: 11px;
             color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.02em;
         }
 
         /* Right: transcript panel */
         .result-transcript {
-            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             display: flex;
             flex-direction: column;
             max-height: 600px;
+            background: var(--bg);
         }
 
         .transcript-toolbar {
@@ -533,55 +502,46 @@
         .view-toggle {
             display: flex;
             gap: 2px;
-            background: var(--bg);
-            border-radius: 8px;
-            padding: 2px;
+            background: var(--bg-alt);
+            border-radius: 100px;
+            padding: 3px;
+            border: 1px solid var(--border);
         }
 
         .view-btn {
             padding: 6px 14px;
-            border-radius: 6px;
+            border-radius: 100px;
             border: none;
             background: none;
             color: var(--text-muted);
             cursor: pointer;
             font-size: 13px;
+            font-weight: 500;
             font-family: inherit;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
 
-        .view-btn.active {
-            background: var(--surface-2);
-            color: var(--text);
-        }
+        .view-btn.active { background: var(--accent); color: var(--bg); }
 
         .toolbar-spacer { flex: 1; }
 
         .toolbar-btn {
-            padding: 6px 10px;
-            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             border: 1px solid var(--border);
             background: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 13px;
-            font-family: inherit;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            transition: all 0.2s;
+            justify-content: center;
+            transition: all 0.3s;
         }
 
-        .toolbar-btn:hover {
-            color: var(--text);
-            background: var(--surface-2);
-        }
+        .toolbar-btn:hover { color: var(--text); border-color: var(--text); }
 
-        .result-body {
-            padding: 16px;
-            overflow-y: auto;
-            flex: 1;
-        }
+        .result-body { padding: 16px; overflow-y: auto; flex: 1; }
 
         .transcript-text {
             font-size: 15px;
@@ -591,7 +551,6 @@
             word-wrap: break-word;
         }
 
-        /* Segments view */
         .segments-view { display: none; }
         .segments-view.active { display: block; }
         .full-text-view { display: none; }
@@ -599,8 +558,8 @@
 
         .segment {
             display: flex;
-            gap: 12px;
-            padding: 8px 0;
+            gap: 16px;
+            padding: 10px 0;
             border-bottom: 1px solid var(--border);
         }
 
@@ -609,45 +568,28 @@
         .segment-time {
             font-family: 'SF Mono', 'Fira Code', monospace;
             font-size: 12px;
-            color: var(--accent);
-            min-width: 50px;
+            color: var(--text-muted);
+            min-width: 44px;
             padding-top: 3px;
             flex-shrink: 0;
+            font-weight: 500;
         }
 
-        .segment-text {
-            font-size: 15px;
-            line-height: 1.6;
-        }
+        .segment-text { font-size: 15px; line-height: 1.6; }
 
-        .btn-sm {
-            padding: 8px 14px;
-            font-size: 13px;
-            border-radius: 8px;
-        }
+        .btn-sm { padding: 8px 14px; font-size: 13px; border-radius: 100px; }
 
-        /* Responsive: stack on mobile */
         @media (max-width: 768px) {
-            .result-layout {
-                grid-template-columns: 1fr;
-            }
-            .result-thumbnail {
-                aspect-ratio: 16/9;
-            }
-            .result-transcript {
-                max-height: 500px;
-            }
+            .result-layout { grid-template-columns: 1fr; }
+            .result-thumbnail { aspect-ratio: 16/9; }
+            .result-transcript { max-height: 500px; }
         }
 
         /* Batch results */
-        .batch-results {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .batch-results { display: flex; flex-direction: column; gap: 12px; }
 
         .batch-item {
-            background: var(--surface);
+            background: var(--bg);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 16px 20px;
@@ -669,16 +611,11 @@
             max-width: 400px;
         }
 
-        .batch-status {
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 6px;
-        }
-
-        .batch-status.downloading { background: rgba(59,130,246,0.15); color: var(--blue); }
-        .batch-status.transcribing { background: rgba(249,115,22,0.15); color: var(--orange); }
-        .batch-status.done { background: rgba(34,197,94,0.15); color: var(--green); }
-        .batch-status.error { background: rgba(239,68,68,0.15); color: var(--red); }
+        .batch-status { font-size: 12px; padding: 4px 12px; border-radius: 100px; font-weight: 500; }
+        .batch-status.downloading { background: rgba(59,130,246,0.1); color: var(--blue); }
+        .batch-status.transcribing { background: rgba(249,115,22,0.1); color: var(--orange); }
+        .batch-status.done { background: rgba(52,211,153,0.1); color: #059669; }
+        .batch-status.error { background: rgba(239,68,68,0.1); color: var(--red); }
 
         .batch-transcript {
             font-size: 14px;
@@ -693,8 +630,8 @@
         .error-msg {
             display: none;
             padding: 14px 20px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.2);
             border-radius: var(--radius);
             color: var(--red);
             font-size: 14px;
@@ -703,28 +640,18 @@
 
         .error-msg.visible { display: block; }
 
-        /* History section */
-        .history-section {
-            margin-top: 48px;
-        }
-
-        .history-section h3 {
-            font-size: 18px;
-            margin-bottom: 16px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
         /* How it works */
         .how-section {
-            margin-top: 48px;
-            padding-top: 48px;
+            margin-top: 64px;
+            padding-top: 64px;
             border-top: 1px solid var(--border);
         }
 
         .how-section h2 {
             text-align: center;
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 28px;
+            letter-spacing: -0.03em;
             margin-bottom: 32px;
         }
 
@@ -735,50 +662,55 @@
         }
 
         .step {
-            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 24px;
+            padding: 32px 24px;
             text-align: center;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
+        .step:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
 
         .step-number {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--accent-glow);
-            border: 1px solid var(--accent);
-            color: var(--accent);
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            color: var(--text);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            margin: 0 auto 12px;
+            margin: 0 auto 16px;
         }
 
         .step h3 {
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 16px;
             margin-bottom: 6px;
+            letter-spacing: -0.02em;
         }
 
-        .step p {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+        .step p { font-size: 13px; color: var(--text-muted); }
 
         /* Footer */
         footer {
             text-align: center;
-            padding: 32px;
-            color: var(--text-muted);
+            padding: 32px clamp(20px, 4vw, 56px);
+            color: var(--text-light);
             font-size: 13px;
             border-top: 1px solid var(--border);
         }
 
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+
         /* Responsive */
         @media (max-width: 640px) {
-            nav { padding: 12px 16px; }
-            .nav-links { display: none; }
+            nav { padding: 0 16px; }
+            .nav-links-desktop { display: none; }
             .hero { padding: 40px 16px 24px; }
             .url-input-wrap { flex-direction: column; }
             .btn { width: 100%; justify-content: center; }
@@ -787,23 +719,19 @@
 </head>
 <body>
     <nav>
-        <div class="logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #a855f7">
-                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                <line x1="12" y1="19" x2="12" y2="22"/>
-            </svg>
-            Transcriber
-        </div>
+        <a href="https://luxetidestudio.com" class="logo">Luxetide Studio</a>
         <div class="nav-links">
-            <button class="nav-link active" data-page="home">Transcribe</button>
-            <button class="nav-link" data-page="history">History</button>
+            <a href="https://luxetidestudio.com" class="nav-link-site">Home</a>
+            <a href="https://luxetidestudio.com/#projects" class="nav-link-site">Projects</a>
+            <button class="nav-link active">Transcriber</button>
+            <a href="https://luxetidestudio.com/#contact" class="nav-link-site">Contact</a>
         </div>
     </nav>
 
     <div class="hero">
-        <h1>Free <span class="highlight">Social Media</span> Transcript Generator</h1>
-        <p>Transcribe videos from any platform. Runs locally, free forever. No limits, no accounts, no BS.</p>
+        <p class="hero-label">Free Tool</p>
+        <h1>Social Media Transcript Generator</h1>
+        <p>Transcribe videos from any platform. Free forever, no limits, no accounts required.</p>
         <div class="platforms">
             <div class="platform-pill"><span class="dot"></span> Instagram Reels</div>
             <div class="platform-pill"><span class="dot"></span> TikTok</div>
@@ -814,7 +742,6 @@
     </div>
 
     <div class="container">
-        <!-- Tabs -->
         <div class="tabs">
             <button class="tab active" data-tab="single">Single Video</button>
             <button class="tab" data-tab="batch">Batch Mode</button>
@@ -828,13 +755,7 @@
                     <input type="text" class="url-input" id="url-input"
                            placeholder="Paste Instagram, TikTok, YouTube, or Twitter URL..."
                            autocomplete="off" spellcheck="false">
-                    <button class="btn btn-primary" id="transcribe-btn" onclick="transcribeSingle()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                        </svg>
-                        Transcribe
-                    </button>
+                    <button class="btn btn-primary" id="transcribe-btn" onclick="transcribeSingle()">Transcribe</button>
                 </div>
             </div>
 
@@ -847,24 +768,15 @@
 
             <div class="result-card" id="result-single">
                 <div class="result-layout">
-                    <!-- Left: Video preview -->
                     <div class="result-preview">
                         <img class="result-thumbnail" id="result-thumbnail" alt="Video thumbnail">
                         <div class="preview-overlay">
                             <button class="overlay-btn overlay-btn-cover" onclick="saveCoverImage()">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 Save cover image
                             </button>
                             <button class="overlay-btn overlay-btn-video" onclick="downloadVideo()">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 Download video
                             </button>
                         </div>
@@ -878,8 +790,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Right: Transcript -->
                     <div class="result-transcript">
                         <div class="transcript-toolbar">
                             <div class="view-toggle">
@@ -888,17 +798,10 @@
                             </div>
                             <div class="toolbar-spacer"></div>
                             <button class="toolbar-btn" onclick="copyTranscript()" title="Copy">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                                </svg>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                             </button>
-                            <button class="toolbar-btn" onclick="downloadTranscript()" title="Download transcript">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7 10 12 15 17 10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
+                            <button class="toolbar-btn" onclick="downloadTranscript()" title="Download">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             </button>
                         </div>
                         <div class="result-body">
@@ -918,13 +821,7 @@
                 <textarea class="batch-textarea" id="batch-urls"
                           placeholder="Paste one URL per line...&#10;&#10;https://www.instagram.com/reel/...&#10;https://www.tiktok.com/@user/video/...&#10;https://youtube.com/shorts/..."></textarea>
                 <p class="batch-hint">One URL per line. Up to 20 videos at a time.</p>
-                <button class="btn btn-primary" onclick="transcribeBatch()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                    </svg>
-                    Transcribe All
-                </button>
+                <button class="btn btn-primary" onclick="transcribeBatch()">Transcribe All</button>
             </div>
             <div class="error-msg" id="error-batch"></div>
             <div class="batch-results" id="batch-results"></div>
@@ -934,11 +831,7 @@
         <div class="tab-panel" id="panel-upload">
             <div class="input-group">
                 <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     <p class="upload-main">Drop a video or audio file here</p>
                     <p>or click to browse. MP4, MP3, WAV, M4A, WebM supported.</p>
                 </div>
@@ -950,13 +843,11 @@
                 <span class="status-text" id="status-text-upload">Processing...</span>
             </div>
             <div class="result-card" id="result-upload">
-                <div class="result-header">
+                <div style="padding:16px;border-bottom:1px solid var(--border)">
                     <span class="result-title" id="result-title-upload"></span>
                 </div>
-                <div class="result-actions">
-                    <button class="btn btn-secondary btn-sm" onclick="copyText(document.getElementById('transcript-upload').textContent)">
-                        Copy
-                    </button>
+                <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
+                    <button class="btn btn-secondary btn-sm" onclick="copyText(document.getElementById('transcript-upload').textContent)">Copy</button>
                 </div>
                 <div class="result-body">
                     <div class="transcript-text" id="transcript-upload"></div>
@@ -964,7 +855,6 @@
             </div>
         </div>
 
-        <!-- How it works -->
         <div class="how-section">
             <h2>How it works</h2>
             <div class="steps">
@@ -976,7 +866,7 @@
                 <div class="step">
                     <div class="step-number">2</div>
                     <h3>We extract audio</h3>
-                    <p>Video is downloaded and audio is extracted locally</p>
+                    <p>Video is downloaded and audio is extracted automatically</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
@@ -988,14 +878,12 @@
     </div>
 
     <footer>
-        Runs 100% locally on your machine. No data leaves your computer. Free forever.
+        <a href="https://luxetidestudio.com">Luxetide Studio</a> &middot; Free forever. No limits. No data collection.
     </footer>
 
     <script>
-        // State
         let currentResult = null;
 
-        // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1005,390 +893,129 @@
             });
         });
 
-        // Enter key to submit
         document.getElementById('url-input').addEventListener('keydown', e => {
             if (e.key === 'Enter') transcribeSingle();
         });
 
-        // Drag and drop
         const uploadZone = document.getElementById('upload-zone');
         ['dragenter', 'dragover'].forEach(e => {
-            uploadZone.addEventListener(e, ev => {
-                ev.preventDefault();
-                uploadZone.classList.add('dragover');
-            });
+            uploadZone.addEventListener(e, ev => { ev.preventDefault(); uploadZone.classList.add('dragover'); });
         });
         ['dragleave', 'drop'].forEach(e => {
-            uploadZone.addEventListener(e, ev => {
-                ev.preventDefault();
-                uploadZone.classList.remove('dragover');
-            });
+            uploadZone.addEventListener(e, ev => { ev.preventDefault(); uploadZone.classList.remove('dragover'); });
         });
-        uploadZone.addEventListener('drop', e => {
-            const file = e.dataTransfer.files[0];
-            if (file) uploadFile(file);
-        });
+        uploadZone.addEventListener('drop', e => { const file = e.dataTransfer.files[0]; if (file) uploadFile(file); });
 
-        // Single video transcribe
         async function transcribeSingle() {
             const input = document.getElementById('url-input');
             const url = input.value.trim();
             if (!url) return;
-
-            hideEl('error-single');
-            hideEl('result-single');
-            showEl('status-single');
-            disableBtn('transcribe-btn');
-
+            hideEl('error-single'); hideEl('result-single'); showEl('status-single'); disableBtn('transcribe-btn');
             try {
-                const res = await fetch('/api/transcribe', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url})
-                });
+                const res = await fetch('/api/transcribe', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url}) });
                 const data = await res.json();
                 if (data.error) throw new Error(data.error);
-
                 document.getElementById('status-platform-single').textContent = data.platform;
                 pollJob(data.job_id, 'single');
-            } catch (err) {
-                hideEl('status-single');
-                showError('error-single', err.message);
-                enableBtn('transcribe-btn');
-            }
+            } catch (err) { hideEl('status-single'); showError('error-single', err.message); enableBtn('transcribe-btn'); }
         }
 
-        // Poll job status
         function pollJob(jobId, mode) {
             const interval = setInterval(async () => {
                 try {
                     const res = await fetch(`/api/status/${jobId}`);
                     const job = await res.json();
-
-                    if (mode === 'single') {
-                        document.getElementById('status-text-single').textContent = job.message;
-                    } else if (mode === 'upload') {
-                        document.getElementById('status-text-upload').textContent = job.message;
-                    }
-
-                    if (job.status === 'done') {
-                        clearInterval(interval);
-                        if (mode === 'single') {
-                            showSingleResult(job);
-                        } else if (mode === 'upload') {
-                            showUploadResult(job);
-                        }
-                    } else if (job.status === 'error') {
-                        clearInterval(interval);
-                        if (mode === 'single') {
-                            hideEl('status-single');
-                            showError('error-single', job.message);
-                            enableBtn('transcribe-btn');
-                        } else if (mode === 'upload') {
-                            hideEl('status-upload');
-                            showError('error-upload', job.message);
-                        }
-                    }
-                } catch (err) {
-                    // Keep polling
-                }
+                    if (mode === 'single') document.getElementById('status-text-single').textContent = job.message;
+                    else if (mode === 'upload') document.getElementById('status-text-upload').textContent = job.message;
+                    if (job.status === 'done') { clearInterval(interval); if (mode === 'single') showSingleResult(job); else if (mode === 'upload') showUploadResult(job); }
+                    else if (job.status === 'error') { clearInterval(interval); if (mode === 'single') { hideEl('status-single'); showError('error-single', job.message); enableBtn('transcribe-btn'); } else if (mode === 'upload') { hideEl('status-upload'); showError('error-upload', job.message); } }
+                } catch (err) {}
             }, 1000);
         }
 
         function showSingleResult(job) {
-            currentResult = job;
-            hideEl('status-single');
-            enableBtn('transcribe-btn');
-
+            currentResult = job; hideEl('status-single'); enableBtn('transcribe-btn');
             const info = job.video_info || {};
-
-            // Thumbnail - extracted frame from the actual video
             const thumbEl = document.getElementById('result-thumbnail');
-            if (info.has_thumbnail) {
-                thumbEl.src = `/api/thumbnail/${job.id}?t=${Date.now()}`;
-                thumbEl.style.display = 'block';
-                thumbEl.onerror = () => { thumbEl.style.display = 'none'; };
-            } else {
-                thumbEl.style.display = 'none';
-            }
-
-            // Info
+            if (info.has_thumbnail) { thumbEl.src = `/api/thumbnail/${job.id}?t=${Date.now()}`; thumbEl.style.display = 'block'; thumbEl.onerror = () => { thumbEl.style.display = 'none'; }; } else { thumbEl.style.display = 'none'; }
             document.getElementById('result-title').textContent = info.title || 'Untitled';
             document.getElementById('result-uploader').textContent = info.uploader && info.uploader !== 'Unknown' ? info.uploader : '';
-
-            // Meta tags
-            const platformTag = document.getElementById('result-platform-tag');
-            platformTag.textContent = (job.platform || 'video').charAt(0).toUpperCase() + (job.platform || 'video').slice(1);
-
-            const durationEl = document.getElementById('result-duration');
-            durationEl.textContent = info.duration ? formatDuration(info.duration) : '';
-            durationEl.style.display = info.duration ? '' : 'none';
-
-            const langEl = document.getElementById('result-language');
-            langEl.textContent = job.result.language ? job.result.language.toUpperCase() : '';
-            langEl.style.display = job.result.language ? '' : 'none';
-
-            // Full text
+            document.getElementById('result-platform-tag').textContent = (job.platform || 'video').charAt(0).toUpperCase() + (job.platform || 'video').slice(1);
+            const durationEl = document.getElementById('result-duration'); durationEl.textContent = info.duration ? formatDuration(info.duration) : ''; durationEl.style.display = info.duration ? '' : 'none';
+            const langEl = document.getElementById('result-language'); langEl.textContent = job.result.language ? job.result.language.toUpperCase() : ''; langEl.style.display = job.result.language ? '' : 'none';
             document.getElementById('transcript-full').textContent = job.result.full_text;
-
-            // Segments with timestamps
             const segEl = document.getElementById('segments-view');
-            segEl.innerHTML = job.result.segments.map(s => `
-                <div class="segment">
-                    <span class="segment-time">${formatTime(s.start)}</span>
-                    <span class="segment-text">${escapeHtml(s.text)}</span>
-                </div>
-            `).join('');
-
-            // Default to timestamps view
-            document.getElementById('full-text-view').classList.remove('active');
-            document.getElementById('segments-view').classList.add('active');
-            document.querySelectorAll('.view-btn').forEach(b => {
-                b.classList.toggle('active', b.textContent.trim() === 'Timestamps');
-            });
-
+            segEl.innerHTML = job.result.segments.map(s => `<div class="segment"><span class="segment-time">${formatTime(s.start)}</span><span class="segment-text">${escapeHtml(s.text)}</span></div>`).join('');
+            document.getElementById('full-text-view').classList.remove('active'); document.getElementById('segments-view').classList.add('active');
+            document.querySelectorAll('.view-btn').forEach(b => { b.classList.toggle('active', b.textContent.trim() === 'Timestamps'); });
             showEl('result-single');
         }
 
-        // Save cover image (thumbnail) via proxy
         async function saveCoverImage() {
             if (!currentResult?.id) return;
             const title = currentResult.video_info?.title || 'cover';
-            try {
-                const res = await fetch(`/api/thumbnail/${currentResult.id}`);
-                if (!res.ok) throw new Error('Failed to fetch image');
-                const blob = await res.blob();
-                const ext = blob.type.includes('png') ? '.png' : '.jpg';
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `${title.replace(/[^a-z0-9]/gi, '_')}_cover${ext}`;
-                a.click();
-                URL.revokeObjectURL(a.href);
-            } catch (err) {
-                alert('Failed to save cover image');
-            }
+            try { const res = await fetch(`/api/thumbnail/${currentResult.id}`); if (!res.ok) throw new Error(); const blob = await res.blob(); const ext = blob.type.includes('png') ? '.png' : '.jpg'; const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${title.replace(/[^a-z0-9]/gi, '_')}_cover${ext}`; a.click(); URL.revokeObjectURL(a.href); } catch (err) { alert('Failed to save cover image'); }
         }
 
-        // Download video
         async function downloadVideo() {
             if (!currentResult?.video_info?.original_url) return;
-            const btn = event.target.closest('.overlay-btn');
-            const origText = btn.innerHTML;
-            btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> Downloading...';
-            btn.disabled = true;
-
+            const btn = event.target.closest('.overlay-btn'); const origText = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> Downloading...'; btn.disabled = true;
             try {
-                const res = await fetch('/api/download-video', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url: currentResult.video_info.original_url})
-                });
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error || 'Download failed');
-                }
-                const blob = await res.blob();
-                const disposition = res.headers.get('Content-Disposition') || '';
-                let filename = 'video.mp4';
-                const match = disposition.match(/filename="?(.+?)"?$/);
-                if (match) filename = match[1];
-
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = filename;
-                a.click();
-                URL.revokeObjectURL(a.href);
-            } catch (err) {
-                alert('Video download failed: ' + err.message);
-            } finally {
-                btn.innerHTML = origText;
-                btn.disabled = false;
-            }
+                const res = await fetch('/api/download-video', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url: currentResult.video_info.original_url}) });
+                if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Download failed'); }
+                const blob = await res.blob(); const disposition = res.headers.get('Content-Disposition') || ''; let filename = 'video.mp4'; const match = disposition.match(/filename="?(.+?)"?$/); if (match) filename = match[1];
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href);
+            } catch (err) { alert('Video download failed: ' + err.message); } finally { btn.innerHTML = origText; btn.disabled = false; }
         }
 
-        function showUploadResult(job) {
-            currentResult = job;
-            hideEl('status-upload');
-            document.getElementById('result-title-upload').textContent = job.video_info?.title || 'Upload';
-            document.getElementById('transcript-upload').textContent = job.result.full_text;
-            showEl('result-upload');
-        }
+        function showUploadResult(job) { currentResult = job; hideEl('status-upload'); document.getElementById('result-title-upload').textContent = job.video_info?.title || 'Upload'; document.getElementById('transcript-upload').textContent = job.result.full_text; showEl('result-upload'); }
 
-        // View toggle
-        function setView(mode) {
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+        function setView(mode) { document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); document.getElementById('full-text-view').classList.toggle('active', mode === 'full'); document.getElementById('segments-view').classList.toggle('active', mode === 'segments'); }
 
-            document.getElementById('full-text-view').classList.toggle('active', mode === 'full');
-            document.getElementById('segments-view').classList.toggle('active', mode === 'segments');
-        }
-
-        // Batch transcribe
         async function transcribeBatch() {
-            const textarea = document.getElementById('batch-urls');
-            const urls = textarea.value.split('\n').map(u => u.trim()).filter(u => u);
-            if (!urls.length) return;
-
-            hideEl('error-batch');
-            const resultsEl = document.getElementById('batch-results');
-            resultsEl.innerHTML = '';
-
+            const textarea = document.getElementById('batch-urls'); const urls = textarea.value.split('\n').map(u => u.trim()).filter(u => u); if (!urls.length) return;
+            hideEl('error-batch'); const resultsEl = document.getElementById('batch-results'); resultsEl.innerHTML = '';
             try {
-                const res = await fetch('/api/transcribe/batch', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({urls})
-                });
-                const data = await res.json();
-                if (data.error) throw new Error(data.error);
-
-                data.jobs.forEach(j => {
-                    const div = document.createElement('div');
-                    div.className = 'batch-item';
-                    div.id = `batch-${j.job_id}`;
-                    div.innerHTML = `
-                        <div class="batch-item-header">
-                            <span class="batch-item-url">${escapeHtml(j.url)}</span>
-                            <span class="batch-status downloading" id="bstatus-${j.job_id}">queued</span>
-                        </div>
-                        <div class="batch-transcript" id="btranscript-${j.job_id}"></div>
-                    `;
-                    resultsEl.appendChild(div);
-                    pollBatchJob(j.job_id);
-                });
-            } catch (err) {
-                showError('error-batch', err.message);
-            }
+                const res = await fetch('/api/transcribe/batch', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({urls}) });
+                const data = await res.json(); if (data.error) throw new Error(data.error);
+                data.jobs.forEach(j => { const div = document.createElement('div'); div.className = 'batch-item'; div.id = `batch-${j.job_id}`; div.innerHTML = `<div class="batch-item-header"><span class="batch-item-url">${escapeHtml(j.url)}</span><span class="batch-status downloading" id="bstatus-${j.job_id}">queued</span></div><div class="batch-transcript" id="btranscript-${j.job_id}"></div>`; resultsEl.appendChild(div); pollBatchJob(j.job_id); });
+            } catch (err) { showError('error-batch', err.message); }
         }
 
         function pollBatchJob(jobId) {
             const interval = setInterval(async () => {
-                try {
-                    const res = await fetch(`/api/status/${jobId}`);
-                    const job = await res.json();
-                    const statusEl = document.getElementById(`bstatus-${jobId}`);
-                    const transcriptEl = document.getElementById(`btranscript-${jobId}`);
-
-                    if (statusEl) {
-                        statusEl.textContent = job.status;
-                        statusEl.className = `batch-status ${job.status}`;
-                    }
-
-                    if (job.status === 'done') {
-                        clearInterval(interval);
-                        if (transcriptEl) {
-                            transcriptEl.textContent = job.result.full_text;
-                        }
-                    } else if (job.status === 'error') {
-                        clearInterval(interval);
-                        if (transcriptEl) {
-                            transcriptEl.textContent = `Error: ${job.message}`;
-                            transcriptEl.style.color = 'var(--red)';
-                        }
-                    }
-                } catch (err) {}
+                try { const res = await fetch(`/api/status/${jobId}`); const job = await res.json(); const s = document.getElementById(`bstatus-${jobId}`); const t = document.getElementById(`btranscript-${jobId}`);
+                if (s) { s.textContent = job.status; s.className = `batch-status ${job.status}`; }
+                if (job.status === 'done') { clearInterval(interval); if (t) t.textContent = job.result.full_text; }
+                else if (job.status === 'error') { clearInterval(interval); if (t) { t.textContent = `Error: ${job.message}`; t.style.color = 'var(--red)'; } } } catch (err) {}
             }, 1500);
         }
 
-        // File upload
-        function handleUpload(input) {
-            if (input.files[0]) uploadFile(input.files[0]);
-        }
-
+        function handleUpload(input) { if (input.files[0]) uploadFile(input.files[0]); }
         async function uploadFile(file) {
-            hideEl('error-upload');
-            hideEl('result-upload');
-            showEl('status-upload');
-            document.getElementById('status-text-upload').textContent = 'Uploading...';
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const res = await fetch('/api/transcribe/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-                if (data.error) throw new Error(data.error);
-
-                pollJob(data.job_id, 'upload');
-            } catch (err) {
-                hideEl('status-upload');
-                showError('error-upload', err.message);
-            }
+            hideEl('error-upload'); hideEl('result-upload'); showEl('status-upload'); document.getElementById('status-text-upload').textContent = 'Uploading...';
+            const formData = new FormData(); formData.append('file', file);
+            try { const res = await fetch('/api/transcribe/upload', { method: 'POST', body: formData }); const data = await res.json(); if (data.error) throw new Error(data.error); pollJob(data.job_id, 'upload'); } catch (err) { hideEl('status-upload'); showError('error-upload', err.message); }
         }
 
-        // Copy/download
-        function copyTranscript() {
-            if (!currentResult?.result?.full_text) return;
-            copyText(currentResult.result.full_text);
-        }
-
-        function copyText(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // Brief visual feedback
-                const btn = event.target.closest('.btn');
-                if (btn) {
-                    const orig = btn.innerHTML;
-                    btn.innerHTML = '&#10003; Copied!';
-                    setTimeout(() => btn.innerHTML = orig, 1500);
-                }
-            });
-        }
-
+        function copyTranscript() { if (!currentResult?.result?.full_text) return; copyText(currentResult.result.full_text); }
+        function copyText(text) { navigator.clipboard.writeText(text).then(() => { const btn = event.target.closest('.btn, .toolbar-btn'); if (btn) { const orig = btn.innerHTML; btn.innerHTML = '&#10003;'; setTimeout(() => btn.innerHTML = orig, 1500); } }); }
         function downloadTranscript() {
-            if (!currentResult?.result) return;
-            const title = currentResult.video_info?.title || 'transcript';
-            const segments = currentResult.result.segments || [];
-
-            // Build timestamped text
-            let text = `${title}\n`;
-            text += `${'='.repeat(title.length)}\n\n`;
-            if (segments.length > 0) {
-                text += segments.map(s => `[${formatTime(s.start)}] ${s.text}`).join('\n');
-                text += `\n\n---\nFull text:\n${currentResult.result.full_text}`;
-            } else {
-                text += currentResult.result.full_text;
-            }
-
-            const blob = new Blob([text], {type: 'text/plain'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.txt`;
-            a.click();
+            if (!currentResult?.result) return; const title = currentResult.video_info?.title || 'transcript'; const segments = currentResult.result.segments || [];
+            let text = `${title}\n${'='.repeat(title.length)}\n\n`;
+            if (segments.length > 0) { text += segments.map(s => `[${formatTime(s.start)}] ${s.text}`).join('\n'); text += `\n\n---\nFull text:\n${currentResult.result.full_text}`; } else { text += currentResult.result.full_text; }
+            const blob = new Blob([text], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.txt`; a.click();
         }
 
-        // Helpers
         function showEl(id) { document.getElementById(id).classList.add('visible'); }
         function hideEl(id) { document.getElementById(id).classList.remove('visible'); }
-        function showError(id, msg) {
-            const el = document.getElementById(id);
-            el.textContent = msg;
-            el.classList.add('visible');
-        }
+        function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('visible'); }
         function disableBtn(id) { document.getElementById(id).disabled = true; }
         function enableBtn(id) { document.getElementById(id).disabled = false; }
-
-        function formatDuration(s) {
-            const m = Math.floor(s / 60);
-            const sec = Math.floor(s % 60);
-            return `${m}:${sec.toString().padStart(2, '0')}`;
-        }
-
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = Math.floor(seconds % 60);
-            if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            return `${m}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
+        function formatDuration(s) { const m = Math.floor(s / 60); const sec = Math.floor(s % 60); return `${m}:${sec.toString().padStart(2, '0')}`; }
+        function formatTime(seconds) { const h = Math.floor(seconds / 3600); const m = Math.floor((seconds % 3600) / 60); const s = Math.floor(seconds % 60); if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; return `${m}:${s.toString().padStart(2, '0')}`; }
+        function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
     </script>
 </body>
 </html>
