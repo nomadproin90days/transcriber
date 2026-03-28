@@ -76,28 +76,21 @@ def validate_url(url: str) -> bool:
 
 
 def download_audio(url: str, output_path: str) -> dict:
-    """Download audio from a URL using yt-dlp. Returns info dict."""
+    """Download video, extract a thumbnail frame, then extract audio."""
     if not validate_url(url):
         raise ValueError("Invalid URL. Only public HTTP/HTTPS URLs are allowed.")
     import yt_dlp
+    import subprocess
 
+    # Step 1: Download full video (we need it for the thumbnail frame)
+    video_path = output_path + "_video"
     ydl_opts = {
-        "format": "bestaudio/best",
-        "postprocessors": [
-            {
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }
-        ],
-        "outtmpl": output_path,
+        "format": "best[ext=mp4]/best",
+        "outtmpl": video_path + ".%(ext)s",
         "quiet": True,
         "no_warnings": True,
         "socket_timeout": 30,
         "retries": 3,
-        "extractor_args": {
-            "instagram": {"skip": ["dash"]},
-        },
         "http_headers": {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         },
@@ -106,30 +99,66 @@ def download_audio(url: str, output_path: str) -> dict:
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
 
-    # Get best thumbnail
-    thumbnail = info.get("thumbnail", "")
-    thumbnails = info.get("thumbnails", [])
-    if thumbnails:
-        # Pick the largest thumbnail available
-        best = sorted(thumbnails, key=lambda t: t.get("width", 0) * t.get("height", 0), reverse=True)
-        thumbnail = best[0].get("url", thumbnail)
-
-    # Get video download URL for "Download video" button
-    video_url = ""
-    formats = info.get("formats", [])
-    for f in reversed(formats):
-        if f.get("vcodec", "none") != "none" and f.get("acodec", "none") != "none":
-            video_url = f.get("url", "")
+    # Find the downloaded video file
+    video_file = None
+    for f in DOWNLOAD_DIR.glob(f"{Path(video_path).name}.*"):
+        if f.suffix in ('.mp4', '.webm', '.mkv', '.mov', '.flv'):
+            video_file = f
             break
-    if not video_url:
-        video_url = info.get("url", "")
+
+    # Step 2: Extract a thumbnail frame from the video using ffmpeg
+    thumb_path = DOWNLOAD_DIR / f"{Path(output_path).name}_thumb.jpg"
+    if video_file:
+        try:
+            # Grab a frame from 1 second in (or 0 if video is very short)
+            duration = info.get("duration", 0)
+            seek_time = min(1, duration / 2) if duration and duration > 0 else 0
+            subprocess.run(
+                [
+                    "ffmpeg", "-y",
+                    "-ss", str(seek_time),
+                    "-i", str(video_file),
+                    "-vframes", "1",
+                    "-q:v", "2",
+                    str(thumb_path),
+                ],
+                capture_output=True,
+                timeout=15,
+            )
+        except Exception as e:
+            print(f"[thumbnail] ffmpeg frame extract failed: {e}")
+
+    # Step 3: Extract audio from the video
+    audio_path = output_path + ".mp3"
+    if video_file:
+        try:
+            subprocess.run(
+                [
+                    "ffmpeg", "-y",
+                    "-i", str(video_file),
+                    "-vn",
+                    "-acodec", "libmp3lame",
+                    "-q:a", "2",
+                    audio_path,
+                ],
+                capture_output=True,
+                timeout=60,
+            )
+        except Exception as e:
+            print(f"[audio] ffmpeg extract failed: {e}")
+
+    # Clean up video file (keep thumb and audio)
+    if video_file:
+        try:
+            video_file.unlink()
+        except OSError:
+            pass
 
     return {
         "title": info.get("title", "Unknown"),
         "duration": info.get("duration", 0),
         "uploader": info.get("uploader", "Unknown"),
-        "thumbnail": thumbnail,
-        "video_url": video_url,
+        "has_thumbnail": thumb_path.exists(),
         "original_url": url,
     }
 
@@ -205,8 +234,10 @@ def process_job(job_id: str, url: str):
         job["message"] = str(e)
 
     finally:
-        # Clean up audio files
+        # Clean up audio files but KEEP the thumbnail
         for f in DOWNLOAD_DIR.glob(f"{job_id}*"):
+            if "_thumb.jpg" in f.name:
+                continue  # keep thumbnail for serving
             try:
                 f.unlink()
             except OSError:
@@ -246,27 +277,12 @@ def index():
 
 @app.route("/api/thumbnail/<job_id>")
 def api_thumbnail(job_id):
-    """Proxy thumbnail image to avoid hotlink protection."""
-    import urllib.request
-    job = jobs.get(job_id)
-    if not job or not job.get("video_info") or not job["video_info"].get("thumbnail"):
-        return "", 404
-
-    thumb_url = job["video_info"]["thumbnail"]
-    try:
-        req = urllib.request.Request(thumb_url, headers={
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-            "Referer": job.get("url", ""),
-        })
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = resp.read()
-            content_type = resp.headers.get("Content-Type", "image/jpeg")
-        from flask import Response
-        return Response(data, content_type=content_type, headers={
-            "Cache-Control": "public, max-age=3600",
-        })
-    except Exception:
-        return "", 404
+    """Serve the locally extracted thumbnail frame."""
+    from flask import send_file
+    thumb_path = DOWNLOAD_DIR / f"{job_id}_thumb.jpg"
+    if thumb_path.exists():
+        return send_file(str(thumb_path), mimetype="image/jpeg")
+    return "", 404
 
 
 @app.route("/api/download-video", methods=["POST"])
@@ -449,5 +465,6 @@ def api_history():
 
 
 if __name__ == "__main__":
-    print("\n  Transcriber running at http://localhost:5000\n")
-    app.run(debug=False, port=5000)
+    port = int(os.environ.get("PORT", 5050))
+    print(f"\n  Transcriber running at http://localhost:{port}\n")
+    app.run(debug=False, host="0.0.0.0", port=port)

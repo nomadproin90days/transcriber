@@ -1102,10 +1102,10 @@
 
             const info = job.video_info || {};
 
-            // Thumbnail - proxy through our backend to avoid hotlink protection
+            // Thumbnail - extracted frame from the actual video
             const thumbEl = document.getElementById('result-thumbnail');
-            if (info.thumbnail) {
-                thumbEl.src = `/api/thumbnail/${job.id}`;
+            if (info.has_thumbnail) {
+                thumbEl.src = `/api/thumbnail/${job.id}?t=${Date.now()}`;
                 thumbEl.style.display = 'block';
                 thumbEl.onerror = () => { thumbEl.style.display = 'none'; };
             } else {
