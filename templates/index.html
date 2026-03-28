@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcriber - Free Social Media Transcript Generator</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-2: #1e1e1e;
+            --border: #2a2a2a;
+            --text: #e5e5e5;
+            --text-muted: #888;
+            --accent: #a855f7;
+            --accent-hover: #9333ea;
+            --accent-glow: rgba(168, 85, 247, 0.15);
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f97316;
+            --blue: #3b82f6;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Nav */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo svg { width: 28px; height: 28px; }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text);
+            background: var(--surface-2);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 24px 32px;
+        }
+
+        .hero h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--accent), #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Platform pills */
+        .platforms {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .platform-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .platform-pill .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        /* Main container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin: 32px 0 24px;
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .tab {
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-family: inherit;
+            position: relative;
+        }
+
+        .tab:hover { color: var(--text); }
+
+        .tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .tab .badge {
+            font-size: 10px;
+            background: var(--green);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Tab panels */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Input area */
+        .input-group {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .url-input-wrap {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .url-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .url-input::placeholder { color: #555; }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 10px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* Batch textarea */
+        .batch-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            outline: none;
+            resize: vertical;
+            line-height: 1.8;
+            transition: border-color 0.2s;
+        }
+
+        .batch-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .batch-textarea::placeholder { color: #555; }
+
+        .batch-hint {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 10px;
+            margin-bottom: 14px;
+        }
+
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg);
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .upload-zone svg {
+            width: 48px;
+            height: 48px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .upload-zone p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .upload-zone .upload-main {
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        #file-input { display: none; }
+
+        /* Status / progress */
+        .status-bar {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+        }
+
+        .status-bar.visible { display: flex; }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .status-text {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .status-platform {
+            margin-left: auto;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--surface-2);
+            color: var(--text-muted);
+            text-transform: capitalize;
+        }
+
+        /* Result card */
+        .result-card {
+            display: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .result-card.visible { display: block; }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+        }
+
+        .result-title {
+            font-weight: 600;
+            font-size: 15px;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 8px;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .result-body {
+            padding: 20px;
+        }
+
+        .transcript-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Segments view */
+        .segments-view { display: none; }
+        .segments-view.active { display: block; }
+        .full-text-view.active { display: block; }
+
+        .segment {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .segment:last-child { border-bottom: none; }
+
+        .segment-time {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            min-width: 60px;
+            padding-top: 2px;
+        }
+
+        .segment-text {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            gap: 2px;
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 2px;
+        }
+
+        .view-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: var(--surface-2);
+            color: var(--text);
+        }
+
+        /* Batch results */
+        .batch-results {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .batch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+        }
+
+        .batch-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .batch-item-url {
+            font-size: 13px;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 400px;
+        }
+
+        .batch-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .batch-status.downloading { background: rgba(59,130,246,0.15); color: var(--blue); }
+        .batch-status.transcribing { background: rgba(249,115,22,0.15); color: var(--orange); }
+        .batch-status.done { background: rgba(34,197,94,0.15); color: var(--green); }
+        .batch-status.error { background: rgba(239,68,68,0.15); color: var(--red); }
+
+        .batch-transcript {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text);
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Error */
+        .error-msg {
+            display: none;
+            padding: 14px 20px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius);
+            color: var(--red);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .error-msg.visible { display: block; }
+
+        /* History section */
+        .history-section {
+            margin-top: 48px;
+        }
+
+        .history-section h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* How it works */
+        .how-section {
+            margin-top: 48px;
+            padding-top: 48px;
+            border-top: 1px solid var(--border);
+        }
+
+        .how-section h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 32px;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .step {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 12px;
+        }
+
+        .step h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .step p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            nav { padding: 12px 16px; }
+            .nav-links { display: none; }
+            .hero { padding: 40px 16px 24px; }
+            .url-input-wrap { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .result-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #a855f7">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+            Transcriber
+        </div>
+        <div class="nav-links">
+            <button class="nav-link active" data-page="home">Transcribe</button>
+            <button class="nav-link" data-page="history">History</button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Free <span class="highlight">Social Media</span> Transcript Generator</h1>
+        <p>Transcribe videos from any platform. Runs locally, free forever. No limits, no accounts, no BS.</p>
+        <div class="platforms">
+            <div class="platform-pill"><span class="dot"></span> Instagram Reels</div>
+            <div class="platform-pill"><span class="dot"></span> TikTok</div>
+            <div class="platform-pill"><span class="dot"></span> YouTube Shorts</div>
+            <div class="platform-pill"><span class="dot"></span> Twitter/X</div>
+            <div class="platform-pill"><span class="dot"></span> Facebook</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="single">Single Video</button>
+            <button class="tab" data-tab="batch">Batch Mode</button>
+            <button class="tab" data-tab="upload">Upload <span class="badge">Free</span></button>
+        </div>
+
+        <!-- Single Video -->
+        <div class="tab-panel active" id="panel-single">
+            <div class="input-group">
+                <div class="url-input-wrap">
+                    <input type="text" class="url-input" id="url-input"
+                           placeholder="Paste Instagram, TikTok, YouTube, or Twitter URL..."
+                           autocomplete="off" spellcheck="false">
+                    <button class="btn btn-primary" id="transcribe-btn" onclick="transcribeSingle()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        </svg>
+                        Transcribe
+                    </button>
+                </div>
+            </div>
+
+            <div class="error-msg" id="error-single"></div>
+            <div class="status-bar" id="status-single">
+                <div class="spinner"></div>
+                <span class="status-text" id="status-text-single">Processing...</span>
+                <span class="status-platform" id="status-platform-single"></span>
+            </div>
+
+            <div class="result-card" id="result-single">
+                <div class="result-header">
+                    <span class="result-title" id="result-title"></span>
+                    <div class="result-meta">
+                        <span id="result-duration"></span>
+                        <span id="result-language"></span>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <div class="view-toggle">
+                        <button class="view-btn active" onclick="setView('full')">Full Text</button>
+                        <button class="view-btn" onclick="setView('segments')">Timestamps</button>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="copyTranscript()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        Copy
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="downloadTranscript()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download
+                    </button>
+                </div>
+                <div class="result-body">
+                    <div class="full-text-view active" id="full-text-view">
+                        <div class="transcript-text" id="transcript-full"></div>
+                    </div>
+                    <div class="segments-view" id="segments-view"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Mode -->
+        <div class="tab-panel" id="panel-batch">
+            <div class="input-group">
+                <textarea class="batch-textarea" id="batch-urls"
+                          placeholder="Paste one URL per line...&#10;&#10;https://www.instagram.com/reel/...&#10;https://www.tiktok.com/@user/video/...&#10;https://youtube.com/shorts/..."></textarea>
+                <p class="batch-hint">One URL per line. Up to 20 videos at a time.</p>
+                <button class="btn btn-primary" onclick="transcribeBatch()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    </svg>
+                    Transcribe All
+                </button>
+            </div>
+            <div class="error-msg" id="error-batch"></div>
+            <div class="batch-results" id="batch-results"></div>
+        </div>
+
+        <!-- Upload -->
+        <div class="tab-panel" id="panel-upload">
+            <div class="input-group">
+                <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <p class="upload-main">Drop a video or audio file here</p>
+                    <p>or click to browse. MP4, MP3, WAV, M4A, WebM supported.</p>
+                </div>
+                <input type="file" id="file-input" accept="video/*,audio/*,.mp4,.mp3,.wav,.m4a,.webm,.ogg" onchange="handleUpload(this)">
+            </div>
+            <div class="error-msg" id="error-upload"></div>
+            <div class="status-bar" id="status-upload">
+                <div class="spinner"></div>
+                <span class="status-text" id="status-text-upload">Processing...</span>
+            </div>
+            <div class="result-card" id="result-upload">
+                <div class="result-header">
+                    <span class="result-title" id="result-title-upload"></span>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="copyText(document.getElementById('transcript-upload').textContent)">
+                        Copy
+                    </button>
+                </div>
+                <div class="result-body">
+                    <div class="transcript-text" id="transcript-upload"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="how-section">
+            <h2>How it works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Paste a URL</h3>
+                    <p>From Instagram, TikTok, YouTube, Twitter, or any platform</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>We extract audio</h3>
+                    <p>Video is downloaded and audio is extracted locally</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>AI transcribes</h3>
+                    <p>Whisper AI converts speech to text with timestamps</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Runs 100% locally on your machine. No data leaves your computer. Free forever.
+    </footer>
+
+    <script>
+        // State
+        let currentResult = null;
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Enter key to submit
+        document.getElementById('url-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') transcribeSingle();
+        });
+
+        // Drag and drop
+        const uploadZone = document.getElementById('upload-zone');
+        ['dragenter', 'dragover'].forEach(e => {
+            uploadZone.addEventListener(e, ev => {
+                ev.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+        });
+        ['dragleave', 'drop'].forEach(e => {
+            uploadZone.addEventListener(e, ev => {
+                ev.preventDefault();
+                uploadZone.classList.remove('dragover');
+            });
+        });
+        uploadZone.addEventListener('drop', e => {
+            const file = e.dataTransfer.files[0];
+            if (file) uploadFile(file);
+        });
+
+        // Single video transcribe
+        async function transcribeSingle() {
+            const input = document.getElementById('url-input');
+            const url = input.value.trim();
+            if (!url) return;
+
+            hideEl('error-single');
+            hideEl('result-single');
+            showEl('status-single');
+            disableBtn('transcribe-btn');
+
+            try {
+                const res = await fetch('/api/transcribe', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url})
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                document.getElementById('status-platform-single').textContent = data.platform;
+                pollJob(data.job_id, 'single');
+            } catch (err) {
+                hideEl('status-single');
+                showError('error-single', err.message);
+                enableBtn('transcribe-btn');
+            }
+        }
+
+        // Poll job status
+        function pollJob(jobId, mode) {
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/status/${jobId}`);
+                    const job = await res.json();
+
+                    if (mode === 'single') {
+                        document.getElementById('status-text-single').textContent = job.message;
+                    } else if (mode === 'upload') {
+                        document.getElementById('status-text-upload').textContent = job.message;
+                    }
+
+                    if (job.status === 'done') {
+                        clearInterval(interval);
+                        if (mode === 'single') {
+                            showSingleResult(job);
+                        } else if (mode === 'upload') {
+                            showUploadResult(job);
+                        }
+                    } else if (job.status === 'error') {
+                        clearInterval(interval);
+                        if (mode === 'single') {
+                            hideEl('status-single');
+                            showError('error-single', job.message);
+                            enableBtn('transcribe-btn');
+                        } else if (mode === 'upload') {
+                            hideEl('status-upload');
+                            showError('error-upload', job.message);
+                        }
+                    }
+                } catch (err) {
+                    // Keep polling
+                }
+            }, 1000);
+        }
+
+        function showSingleResult(job) {
+            currentResult = job;
+            hideEl('status-single');
+            enableBtn('transcribe-btn');
+
+            const info = job.video_info || {};
+            document.getElementById('result-title').textContent = info.title || 'Untitled';
+            document.getElementById('result-duration').textContent = info.duration ? formatDuration(info.duration) : '';
+            document.getElementById('result-language').textContent = job.result.language ? `Language: ${job.result.language}` : '';
+
+            // Full text
+            document.getElementById('transcript-full').textContent = job.result.full_text;
+
+            // Segments
+            const segEl = document.getElementById('segments-view');
+            segEl.innerHTML = job.result.segments.map(s => `
+                <div class="segment">
+                    <span class="segment-time">${formatTime(s.start)}</span>
+                    <span class="segment-text">${escapeHtml(s.text)}</span>
+                </div>
+            `).join('');
+
+            showEl('result-single');
+        }
+
+        function showUploadResult(job) {
+            currentResult = job;
+            hideEl('status-upload');
+            document.getElementById('result-title-upload').textContent = job.video_info?.title || 'Upload';
+            document.getElementById('transcript-upload').textContent = job.result.full_text;
+            showEl('result-upload');
+        }
+
+        // View toggle
+        function setView(mode) {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('full-text-view').classList.toggle('active', mode === 'full');
+            document.getElementById('segments-view').classList.toggle('active', mode === 'segments');
+        }
+
+        // Batch transcribe
+        async function transcribeBatch() {
+            const textarea = document.getElementById('batch-urls');
+            const urls = textarea.value.split('\n').map(u => u.trim()).filter(u => u);
+            if (!urls.length) return;
+
+            hideEl('error-batch');
+            const resultsEl = document.getElementById('batch-results');
+            resultsEl.innerHTML = '';
+
+            try {
+                const res = await fetch('/api/transcribe/batch', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({urls})
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                data.jobs.forEach(j => {
+                    const div = document.createElement('div');
+                    div.className = 'batch-item';
+                    div.id = `batch-${j.job_id}`;
+                    div.innerHTML = `
+                        <div class="batch-item-header">
+                            <span class="batch-item-url">${escapeHtml(j.url)}</span>
+                            <span class="batch-status downloading" id="bstatus-${j.job_id}">queued</span>
+                        </div>
+                        <div class="batch-transcript" id="btranscript-${j.job_id}"></div>
+                    `;
+                    resultsEl.appendChild(div);
+                    pollBatchJob(j.job_id);
+                });
+            } catch (err) {
+                showError('error-batch', err.message);
+            }
+        }
+
+        function pollBatchJob(jobId) {
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/status/${jobId}`);
+                    const job = await res.json();
+                    const statusEl = document.getElementById(`bstatus-${jobId}`);
+                    const transcriptEl = document.getElementById(`btranscript-${jobId}`);
+
+                    if (statusEl) {
+                        statusEl.textContent = job.status;
+                        statusEl.className = `batch-status ${job.status}`;
+                    }
+
+                    if (job.status === 'done') {
+                        clearInterval(interval);
+                        if (transcriptEl) {
+                            transcriptEl.textContent = job.result.full_text;
+                        }
+                    } else if (job.status === 'error') {
+                        clearInterval(interval);
+                        if (transcriptEl) {
+                            transcriptEl.textContent = `Error: ${job.message}`;
+                            transcriptEl.style.color = 'var(--red)';
+                        }
+                    }
+                } catch (err) {}
+            }, 1500);
+        }
+
+        // File upload
+        function handleUpload(input) {
+            if (input.files[0]) uploadFile(input.files[0]);
+        }
+
+        async function uploadFile(file) {
+            hideEl('error-upload');
+            hideEl('result-upload');
+            showEl('status-upload');
+            document.getElementById('status-text-upload').textContent = 'Uploading...';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/transcribe/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                pollJob(data.job_id, 'upload');
+            } catch (err) {
+                hideEl('status-upload');
+                showError('error-upload', err.message);
+            }
+        }
+
+        // Copy/download
+        function copyTranscript() {
+            if (!currentResult?.result?.full_text) return;
+            copyText(currentResult.result.full_text);
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Brief visual feedback
+                const btn = event.target.closest('.btn');
+                if (btn) {
+                    const orig = btn.innerHTML;
+                    btn.innerHTML = '&#10003; Copied!';
+                    setTimeout(() => btn.innerHTML = orig, 1500);
+                }
+            });
+        }
+
+        function downloadTranscript() {
+            if (!currentResult?.result) return;
+            const text = currentResult.result.full_text;
+            const title = currentResult.video_info?.title || 'transcript';
+            const blob = new Blob([text], {type: 'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.txt`;
+            a.click();
+        }
+
+        // Helpers
+        function showEl(id) { document.getElementById(id).classList.add('visible'); }
+        function hideEl(id) { document.getElementById(id).classList.remove('visible'); }
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.classList.add('visible');
+        }
+        function disableBtn(id) { document.getElementById(id).disabled = true; }
+        function enableBtn(id) { document.getElementById(id).disabled = false; }
+
+        function formatDuration(s) {
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${m}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
