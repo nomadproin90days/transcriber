@@ -76,21 +76,32 @@ def validate_url(url: str) -> bool:
 
 
 def download_audio(url: str, output_path: str) -> dict:
-    """Download video, extract a thumbnail frame, then extract audio."""
+    """Download audio and thumbnail using yt-dlp."""
     if not validate_url(url):
         raise ValueError("Invalid URL. Only public HTTP/HTTPS URLs are allowed.")
     import yt_dlp
     import subprocess
+    import urllib.request
+    import ssl
 
-    # Step 1: Download full video (we need it for the thumbnail frame)
-    video_path = output_path + "_video"
+    job_name = Path(output_path).name
+    thumb_path = DOWNLOAD_DIR / f"{job_name}_thumb.jpg"
+
     ydl_opts = {
-        "format": "best[ext=mp4]/best",
-        "outtmpl": video_path + ".%(ext)s",
+        "format": "bestaudio/best",
+        "postprocessors": [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }
+        ],
+        "outtmpl": output_path,
         "quiet": True,
         "no_warnings": True,
         "socket_timeout": 30,
         "retries": 3,
+        "writethumbnail": True,
         "http_headers": {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         },
@@ -99,60 +110,47 @@ def download_audio(url: str, output_path: str) -> dict:
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
 
-    # Find the downloaded video file
-    video_file = None
-    for f in DOWNLOAD_DIR.glob(f"{Path(video_path).name}.*"):
-        if f.suffix in ('.mp4', '.webm', '.mkv', '.mov', '.flv'):
-            video_file = f
+    # yt-dlp saves thumbnail as {output_path}.webp or .jpg or .png
+    # Find it and convert to jpg if needed
+    thumb_found = False
+    for ext in [".webp", ".jpg", ".jpeg", ".png"]:
+        src = Path(output_path + ext)
+        if src.exists():
+            if ext != ".jpg":
+                # Convert to jpg with ffmpeg
+                try:
+                    subprocess.run(
+                        ["ffmpeg", "-y", "-i", str(src), str(thumb_path)],
+                        capture_output=True, timeout=10,
+                    )
+                    src.unlink()
+                except Exception:
+                    # Just rename it
+                    src.rename(thumb_path)
+            else:
+                src.rename(thumb_path)
+            thumb_found = True
             break
 
-    # Step 2: Extract a thumbnail frame from the video using ffmpeg
-    thumb_path = DOWNLOAD_DIR / f"{Path(output_path).name}_thumb.jpg"
-    if video_file:
-        try:
-            # Grab a frame from 1 second in (or 0 if video is very short)
-            duration = info.get("duration", 0)
-            seek_time = min(1, duration / 2) if duration and duration > 0 else 0
-            subprocess.run(
-                [
-                    "ffmpeg", "-y",
-                    "-ss", str(seek_time),
-                    "-i", str(video_file),
-                    "-vframes", "1",
-                    "-q:v", "2",
-                    str(thumb_path),
-                ],
-                capture_output=True,
-                timeout=15,
-            )
-        except Exception as e:
-            print(f"[thumbnail] ffmpeg frame extract failed: {e}")
-
-    # Step 3: Extract audio from the video
-    audio_path = output_path + ".mp3"
-    if video_file:
-        try:
-            subprocess.run(
-                [
-                    "ffmpeg", "-y",
-                    "-i", str(video_file),
-                    "-vn",
-                    "-acodec", "libmp3lame",
-                    "-q:a", "2",
-                    audio_path,
-                ],
-                capture_output=True,
-                timeout=60,
-            )
-        except Exception as e:
-            print(f"[audio] ffmpeg extract failed: {e}")
-
-    # Clean up video file (keep thumb and audio)
-    if video_file:
-        try:
-            video_file.unlink()
-        except OSError:
-            pass
+    # Fallback: try downloading thumbnail URL directly
+    if not thumb_found:
+        thumb_url = info.get("thumbnail", "")
+        if not thumb_url:
+            thumbnails = info.get("thumbnails", [])
+            if thumbnails:
+                thumb_url = thumbnails[-1].get("url", "")
+        if thumb_url:
+            try:
+                ctx = ssl.create_default_context()
+                req = urllib.request.Request(thumb_url, headers={
+                    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+                })
+                with urllib.request.urlopen(req, timeout=10, context=ctx) as resp:
+                    with open(thumb_path, "wb") as f:
+                        f.write(resp.read())
+                thumb_found = True
+            except Exception as e:
+                print(f"[thumbnail] direct download failed: {e}")
 
     return {
         "title": info.get("title", "Unknown"),
