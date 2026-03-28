@@ -695,6 +695,40 @@
 
         .step p { font-size: 13px; color: var(--text-muted); }
 
+        /* Powered by badge */
+        .powered-by {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 48px;
+            padding: 20px;
+        }
+
+        .powered-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .powered-badge:hover {
+            border-color: var(--text);
+            color: var(--text);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .powered-badge svg { flex-shrink: 0; }
+
         /* Footer */
         footer {
             text-align: center;
@@ -875,6 +909,16 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="powered-by">
+        <a href="https://claude.ai/referral/VIVK8NoJOw" target="_blank" rel="noopener" class="powered-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#D4A574" opacity="0.15"/>
+                <path d="M15.5 8.5L10 14l-2.5-2.5" stroke="#D4A574" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Built with Claude Code
+        </a>
     </div>
 
     <footer>
