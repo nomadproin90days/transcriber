@@ -49,6 +49,36 @@ DOWNLOAD_DIR.mkdir(exist_ok=True)
 # In-memory job store
 jobs: dict[str, dict] = {}
 
+# Per-IP rate limiting for Instagram (protects session cookies)
+_ig_rate: dict[str, list[float]] = {}  # ip -> list of timestamps
+IG_RATE_LIMIT = 10  # max requests per window
+IG_RATE_WINDOW = 3600  # 1 hour window
+
+
+def check_instagram_rate_limit(ip: str) -> bool:
+    """Return True if the IP is within the Instagram rate limit."""
+    now = time.time()
+    timestamps = _ig_rate.get(ip, [])
+    timestamps = [t for t in timestamps if now - t < IG_RATE_WINDOW]
+    _ig_rate[ip] = timestamps
+    if len(timestamps) >= IG_RATE_LIMIT:
+        return False
+    timestamps.append(now)
+    return True
+
+
+# Request counters for monitoring
+_request_counts: dict[str, int] = {}
+
+
+def log_request(platform: str):
+    """Increment platform request counter."""
+    _request_counts[platform] = _request_counts.get(platform, 0) + 1
+    total = sum(_request_counts.values())
+    if total % 10 == 0:
+        logging.info(f"[stats] request counts: {_request_counts}")
+
+
 # Lazy-loaded whisper model
 _whisper_model = None
 _model_lock = threading.Lock()
@@ -381,11 +411,12 @@ def process_job(job_id: str, url: str):
         logging.error(f"[job {job_id}] failed: {type(e).__name__}: {e}")
         job["status"] = "error"
         err_msg = str(e)
+        plat = job.get("platform", "Video").title()
         # Friendly error messages for common platform issues
         if "login required" in err_msg.lower() or "rate-limit" in err_msg.lower():
-            job["message"] = f"[{platform.title()}] This video isn't accessible right now — it may be private or the platform is temporarily limiting requests. Try again in a few minutes."
+            job["message"] = f"[{plat}] This video isn't accessible right now — it may be private or the platform is temporarily limiting requests. Try again in a few minutes."
         elif "not available" in err_msg.lower() or "private" in err_msg.lower():
-            job["message"] = f"[{platform.title()}] This video is private or has been removed."
+            job["message"] = f"[{plat}] This video is private or has been removed."
         elif "unsupported url" in err_msg.lower():
             job["message"] = "This URL isn't supported. Try a direct link to a video from Instagram, TikTok, YouTube, or Twitter."
         else:
@@ -553,6 +584,14 @@ def api_transcribe():
 
     platform = detect_platform(url)
 
+    # Rate limit Instagram to protect session cookies
+    if platform == "instagram":
+        client_ip = request.headers.get("X-Forwarded-For", request.remote_addr or "unknown").split(",")[0].strip()
+        if not check_instagram_rate_limit(client_ip):
+            return jsonify({"error": f"Instagram rate limit reached ({IG_RATE_LIMIT} per hour). Try again later or use a different platform."}), 429
+
+    log_request(platform)
+
     job_id = str(uuid.uuid4())[:8]
     jobs[job_id] = {
         "id": job_id,
@@ -569,37 +608,6 @@ def api_transcribe():
     thread.start()
 
     return jsonify({"job_id": job_id, "platform": platform})
-
-
-@app.route("/api/transcribe/batch", methods=["POST"])
-def api_transcribe_batch():
-    data = request.get_json()
-    if not data or not data.get("urls"):
-        return jsonify({"error": "URLs are required"}), 400
-
-    urls = [u.strip() for u in data["urls"] if u.strip()]
-    if not urls:
-        return jsonify({"error": "No valid URLs provided"}), 400
-
-    job_ids = []
-    for url in urls[:20]:  # Max 20 at a time
-        job_id = str(uuid.uuid4())[:8]
-        platform = detect_platform(url)
-        jobs[job_id] = {
-            "id": job_id,
-            "url": url,
-            "platform": platform,
-            "status": "queued",
-            "message": "Starting...",
-            "video_info": None,
-            "result": None,
-            "created_at": time.time(),
-        }
-        thread = threading.Thread(target=process_job, args=(job_id, url), daemon=True)
-        thread.start()
-        job_ids.append({"job_id": job_id, "url": url, "platform": platform})
-
-    return jsonify({"jobs": job_ids})
 
 
 @app.route("/api/transcribe/upload", methods=["POST"])
@@ -648,6 +656,18 @@ def api_status(job_id):
     if not job:
         return jsonify({"error": "Job not found"}), 404
     return jsonify(job)
+
+
+@app.route("/api/stats")
+def api_stats():
+    """Simple usage stats for monitoring."""
+    active = sum(1 for j in jobs.values() if j["status"] in ("queued", "downloading", "transcribing"))
+    done = sum(1 for j in jobs.values() if j["status"] == "done")
+    errors = sum(1 for j in jobs.values() if j["status"] == "error")
+    return jsonify({
+        "requests": _request_counts,
+        "jobs": {"active": active, "done": done, "errors": errors, "total": len(jobs)},
+    })
 
 
 @app.route("/api/history")
