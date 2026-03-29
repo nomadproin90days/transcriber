@@ -13,6 +13,7 @@ COPY . .
 
 RUN mkdir -p downloads
 
-EXPOSE 5000
+EXPOSE 7860
 
-CMD gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --threads 4 --timeout 300 app:app
+ENV PORT=7860
+CMD gunicorn --bind 0.0.0.0:${PORT:-7860} --workers 2 --threads 4 --timeout 300 app:app

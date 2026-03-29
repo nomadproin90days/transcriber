@@ -15,7 +15,7 @@ Personal social media video transcription tool.
 source venv/bin/activate && python app.py
 ```
 
-Opens at http://localhost:5050 (default local port)
+Opens at http://localhost:5050
 
 ## Supported Platforms
 Instagram Reels, TikTok, YouTube/Shorts, Twitter/X, Facebook, LinkedIn, and any yt-dlp supported site.
