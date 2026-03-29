@@ -3,3 +3,4 @@ downloads/
 __pycache__/
 *.pyc
 .DS_Store
+\ntandem-browser copy/
