@@ -303,32 +303,7 @@
 
         .btn-secondary:hover { border-color: var(--text); }
 
-        /* Batch textarea */
-        .batch-textarea {
-            width: 100%;
-            min-height: 150px;
-            padding: 14px 16px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            background: var(--bg-alt);
-            color: var(--text);
-            font-size: 14px;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            outline: none;
-            resize: vertical;
-            line-height: 1.8;
-            transition: border-color 0.3s;
-        }
-
-        .batch-textarea:focus { border-color: var(--text); }
-        .batch-textarea::placeholder { color: var(--text-light); }
-
-        .batch-hint {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-top: 10px;
-            margin-bottom: 14px;
-        }
+        
 
         /* Upload zone */
         .upload-zone {
@@ -595,46 +570,7 @@
             .result-transcript { max-height: 500px; }
         }
 
-        /* Batch results */
-        .batch-results { display: flex; flex-direction: column; gap: 12px; }
-
-        .batch-item {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px 20px;
-        }
-
-        .batch-item-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .batch-item-url {
-            font-size: 13px;
-            color: var(--text-muted);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 400px;
-        }
-
-        .batch-status { font-size: 12px; padding: 4px 12px; border-radius: 100px; font-weight: 500; }
-        .batch-status.downloading { background: rgba(59,130,246,0.1); color: var(--blue); }
-        .batch-status.transcribing { background: rgba(249,115,22,0.1); color: var(--orange); }
-        .batch-status.done { background: rgba(52,211,153,0.1); color: #059669; }
-        .batch-status.error { background: rgba(239,68,68,0.1); color: var(--red); }
-
-        .batch-transcript {
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--text);
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
-        }
+        
 
         /* Error */
         .error-msg {
@@ -788,7 +724,7 @@
     <div class="container">
         <div class="tabs">
             <button class="tab active" data-tab="single">Single Video</button>
-            <button class="tab" data-tab="batch">Batch Mode</button>
+            
             <button class="tab" data-tab="upload">Upload <span class="badge">Free</span></button>
         </div>
 
@@ -859,17 +795,7 @@
             </div>
         </div>
 
-        <!-- Batch Mode -->
-        <div class="tab-panel" id="panel-batch">
-            <div class="input-group">
-                <textarea class="batch-textarea" id="batch-urls"
-                          placeholder="Paste one URL per line...&#10;&#10;https://www.instagram.com/reel/...&#10;https://www.tiktok.com/@user/video/...&#10;https://youtube.com/shorts/..."></textarea>
-                <p class="batch-hint">One URL per line. Up to 20 videos at a time.</p>
-                <button class="btn btn-primary" onclick="transcribeBatch()">Transcribe All</button>
-            </div>
-            <div class="error-msg" id="error-batch"></div>
-            <div class="batch-results" id="batch-results"></div>
-        </div>
+        
 
         <!-- Upload -->
         <div class="tab-panel" id="panel-upload">
@@ -1027,20 +953,13 @@
 
         function setView(mode) { document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); document.getElementById('full-text-view').classList.toggle('active', mode === 'full'); document.getElementById('segments-view').classList.toggle('active', mode === 'segments'); }
 
-        async function transcribeBatch() {
-            const textarea = document.getElementById('batch-urls'); const urls = textarea.value.split('\n').map(u => u.trim()).filter(u => u); if (!urls.length) return;
-            hideEl('error-batch'); const resultsEl = document.getElementById('batch-results'); resultsEl.innerHTML = '';
-            try {
-                const res = await fetch('/api/transcribe/batch', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({urls}) });
+        , body: JSON.stringify({urls}) });
                 const data = await res.json(); if (data.error) throw new Error(data.error);
-                data.jobs.forEach(j => { const div = document.createElement('div'); div.className = 'batch-item'; div.id = `batch-${j.job_id}`; div.innerHTML = `<div class="batch-item-header"><span class="batch-item-url">${escapeHtml(j.url)}</span><span class="batch-status downloading" id="bstatus-${j.job_id}">queued</span></div><div class="batch-transcript" id="btranscript-${j.job_id}"></div>`; resultsEl.appendChild(div); pollBatchJob(j.job_id); });
-            } catch (err) { showError('error-batch', err.message); }
+                
         }
 
-        function pollBatchJob(jobId) {
-            const interval = setInterval(async () => {
-                try { const res = await fetch(`/api/status/${jobId}`); const job = await res.json(); const s = document.getElementById(`bstatus-${jobId}`); const t = document.getElementById(`btranscript-${jobId}`);
-                if (s) { s.textContent = job.status; s.className = `batch-status ${job.status}`; }
+        `); const job = await res.json(); const s = document.getElementById(`bstatus-${jobId}`); const t = document.getElementById(`btranscript-${jobId}`);
+                
                 if (job.status === 'done') { clearInterval(interval); if (t) t.textContent = job.result.full_text; }
                 else if (job.status === 'error') { clearInterval(interval); if (t) { t.textContent = `Error: ${job.message}`; t.style.color = 'var(--red)'; } } } catch (err) {}
             }, 1500);
@@ -1093,7 +1012,7 @@
         "YouTube Shorts transcription",
         "Twitter/X video transcription",
         "Facebook video transcription",
-        "Batch processing up to 20 videos",
+        
         "SRT, VTT, TXT export",
         "Timestamp generation",
         "File upload support",
@@ -1121,7 +1040,7 @@
           "name": "Is this TikTok transcript generator really free?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. There are no usage limits, no accounts required, and no payment. Single videos, batch processing up to 20 videos, and direct file uploads are all completely free."
+            "text": "Yes. There are no usage limits, no accounts required, and no payment. Single videos and direct file uploads are all completely free."
           }
         },
         {
