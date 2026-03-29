@@ -400,6 +400,42 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/robots.txt")
+def robots():
+    from flask import Response
+    content = "User-agent: *\nAllow: /\n\nSitemap: https://iamryanxmas-transcriber.hf.space/sitemap.xml\n"
+    return Response(content, mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    from flask import Response
+    content = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://luxetidestudio.com/transcriber</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://luxetidestudio.com/instagram-transcript</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://luxetidestudio.com/tiktok-transcript</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://luxetidestudio.com/youtube-transcript</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>"""
+    return Response(content, mimetype="application/xml")
+
+
 @app.route("/api/thumbnail/<job_id>")
 def api_thumbnail(job_id):
     """Serve the locally extracted thumbnail frame."""

@@ -3,8 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Social Media Transcript Generator | Luxetide Studio</title>
-    <meta name="description" content="Free unlimited transcript generator for Instagram Reels, TikTok, YouTube Shorts, and more. No login, no limits, no BS. By Luxetide Studio.">
+    <title>Free TikTok & Instagram Transcript Generator | Luxetide Studio</title>
+    <meta name="description" content="Paste any Instagram Reel, TikTok, or YouTube URL — get a full transcript in seconds. Free, unlimited, no account needed. Powered by local Whisper AI.">
+    <link rel="canonical" href="https://luxetidestudio.com/transcriber">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Free TikTok & Instagram Transcript Generator">
+    <meta property="og:description" content="Paste any video URL — get a full transcript in seconds. Free, unlimited, no signup. Powered by local Whisper AI.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://luxetidestudio.com/transcriber">
+    <meta property="og:site_name" content="Luxetide Studio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free TikTok & Instagram Transcript Generator">
+    <meta name="twitter:description" content="Paste any video URL — get a full transcript in seconds. Free, unlimited, no signup.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -764,7 +774,7 @@
 
     <div class="hero">
         <p class="hero-label">Free Tool</p>
-        <h1>Social Media Transcript Generator</h1>
+        <h1>Free TikTok & Instagram Transcript Generator</h1>
         <p>Transcribe videos from any platform. Free forever, no limits, no accounts required.</p>
         <div class="platforms">
             <div class="platform-pill"><span class="dot"></span> Instagram Reels</div>
@@ -1061,5 +1071,87 @@
         function formatTime(seconds) { const h = Math.floor(seconds / 3600); const m = Math.floor((seconds % 3600) / 60); const s = Math.floor(seconds % 60); if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; return `${m}:${s.toString().padStart(2, '0')}`; }
         function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
     </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Free TikTok & Instagram Transcript Generator",
+      "url": "https://luxetidestudio.com/transcriber",
+      "description": "Free AI-powered transcript generator for Instagram Reels, TikTok, YouTube Shorts, Twitter/X, and Facebook videos. No login required. Powered by Whisper AI — your data never leaves the server.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Instagram Reel transcription",
+        "TikTok video transcription",
+        "YouTube Shorts transcription",
+        "Twitter/X video transcription",
+        "Facebook video transcription",
+        "Batch processing up to 20 videos",
+        "SRT, VTT, TXT export",
+        "Timestamp generation",
+        "File upload support",
+        "No account required"
+      ],
+      "creator": {
+        "@type": "Organization",
+        "name": "Luxetide Studio",
+        "url": "https://luxetidestudio.com"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I get a transcript of an Instagram Reel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paste the Instagram Reel URL into the input field and click Transcribe. The tool downloads the audio and uses Whisper AI to generate a full text transcript with timestamps in seconds."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this TikTok transcript generator really free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. There are no usage limits, no accounts required, and no payment. Single videos, batch processing up to 20 videos, and direct file uploads are all completely free."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work with private Instagram or TikTok videos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The tool can only transcribe publicly accessible videos. For private content, use the Upload tab to transcribe a local file directly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What AI model is used for transcription?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Transcription is powered by OpenAI Whisper (via faster-whisper), running locally on the server. Your audio is processed on-server and never sent to any third-party AI service."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What export formats are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can export transcripts as SRT (subtitles), VTT (web captions), or plain TXT files. All formats include timestamps for easy editing."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </body>
 </html>
