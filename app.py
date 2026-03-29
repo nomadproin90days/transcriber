@@ -189,6 +189,24 @@ def download_audio(url: str, output_path: str) -> dict:
     }
 
     platform = detect_platform(url)
+
+    # Instagram requires cookies to bypass login/rate-limit walls
+    cookie_file = None
+    if platform == "instagram":
+        cookie_data = os.environ.get("INSTAGRAM_COOKIES", "")
+        if cookie_data:
+            import base64
+            import tempfile
+            try:
+                cookie_bytes = base64.b64decode(cookie_data)
+                fd, cookie_file = tempfile.mkstemp(suffix=".txt")
+                with os.fdopen(fd, "wb") as f:
+                    f.write(cookie_bytes)
+                ydl_opts["cookiefile"] = cookie_file
+                logging.info("[yt-dlp] using Instagram cookies from env")
+            except Exception as e:
+                logging.warning(f"[yt-dlp] failed to decode INSTAGRAM_COOKIES: {e}")
+
     logging.info(f"[yt-dlp] downloading from {platform}: {url}")
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -196,6 +214,12 @@ def download_audio(url: str, output_path: str) -> dict:
     except Exception as exc:
         logging.error(f"[yt-dlp] download failed for {platform} URL {url}: {type(exc).__name__}: {exc}")
         raise
+    finally:
+        if cookie_file:
+            try:
+                os.unlink(cookie_file)
+            except OSError:
+                pass
 
     logging.info(f"[yt-dlp] download complete: {info.get('title', 'unknown')} ({info.get('duration', 0)}s)")
 
@@ -356,7 +380,16 @@ def process_job(job_id: str, url: str):
     except Exception as e:
         logging.error(f"[job {job_id}] failed: {type(e).__name__}: {e}")
         job["status"] = "error"
-        job["message"] = str(e)
+        err_msg = str(e)
+        # Friendly error messages for common platform issues
+        if "login required" in err_msg.lower() or "rate-limit" in err_msg.lower():
+            job["message"] = f"[{platform.title()}] This video isn't accessible right now — it may be private or the platform is temporarily limiting requests. Try again in a few minutes."
+        elif "not available" in err_msg.lower() or "private" in err_msg.lower():
+            job["message"] = f"[{platform.title()}] This video is private or has been removed."
+        elif "unsupported url" in err_msg.lower():
+            job["message"] = "This URL isn't supported. Try a direct link to a video from Instagram, TikTok, YouTube, or Twitter."
+        else:
+            job["message"] = err_msg
 
     finally:
         # Clean up audio files but KEEP the thumbnail
